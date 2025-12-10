@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
+// falta chamar os controllers?
+
 router.get("/", (req, res) => res.send("Listar categorias"));
 router.get("/:id", (req, res) => res.send("Buscar categoria"));
 router.post("/", (req, res) => res.send("Criar categoria"));

@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
-// USERS
+// falta chamar os controllers?
+
+
 router.get("/", (req, res) => res.send("Listar usuários"));
 router.get("/:id", (req, res) => res.send("Buscar usuário"));
 router.post("/", (req, res) => res.send("Criar usuário"));

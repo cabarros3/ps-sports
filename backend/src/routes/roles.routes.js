@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
+// falta chamar os controllers?
+
 router.get("/", (req, res) => res.send("Listar roles"));
 router.get("/:id", (req, res) => res.send("Buscar role"));
 router.post("/", (req, res) => res.send("Criar role"));
