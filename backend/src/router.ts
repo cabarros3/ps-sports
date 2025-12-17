@@ -1,17 +1,59 @@
-import express from "express";
+import { Router } from "express";
+import swaggerUi from "swagger-ui-express";
+import swaggerJsdoc from "swagger-jsdoc";
+import type { Options } from "swagger-jsdoc";
 
-const app = express.Router();
+// Rotas
+import routesCategories from "./routes/categories.routes.ts";
+import routesLeads from "./routes/leads.routes.ts";
+import routesPhones from "./routes/phones.routes.ts";
+import routesPlayers from "./routes/players.routes.ts";
+import routesRoles from "./routes/roles.routes.ts";
+import routesSchools from "./routes/schools.routes.ts";
+import routesStaff from "./routes/staff.routes.ts";
+import routesTrainers from "./routes/trainers.routes.ts";
+import routesUsersRoles from "./routes/users-roles.routes.ts";
+import routesUsers from "./routes/users.routes.ts";
+
+const router = Router();
+
+const swaggerOptions: Options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "API PS-Sports",
+      version: "1.0.0",
+      description: "API para gerenciamento do sistema PS-Sports",
+    },
+  },
+  apis: [
+    "./src/routes/**/*.routes.ts",
+    "./src/controllers/**/*.ts",
+    "./src/models/**/*.ts",
+  ],
+};
+
+const swaggerDocs = swaggerJsdoc(swaggerOptions);
 
 // Importar rotas
-app.use("/users", require("./routes/users.routes.ts"));
-app.use("/phones", require("./routes/phones.routes.ts"));
-app.use("/roles", require("./routes/roles.routes.ts"));
-app.use("/users-roles", require("./routes/users-roles.routes.ts"));
-app.use("/staff", require("./routes/staff.routes.ts"));
-app.use("/trainers", require("./routes/trainers.routes.ts"));
-app.use("/categories", require("./routes/categories.routes.ts"));
-app.use("/schools", require("./routes/schools.routes.ts"));
-app.use("/players", require("./routes/players.routes.ts"));
-app.use("/leads", require("./routes/leads.routes.ts"));
+router.use("/users", routesUsers);
+router.use("/users-roles", routesUsersRoles);
+router.use("/trainers", routesTrainers);
+router.use("/staff", routesStaff);
+router.use("/schools", routesSchools);
+router.use("/roles", routesRoles);
+router.use("/players", routesPlayers);
+router.use("/phones", routesPhones);
+router.use("/leads", routesLeads);
+router.use("/categories", routesCategories);
 
-export default app;
+// Rota de Documentação (Swagger UI)
+router.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocs, {
+    customSiteTitle: "API Ps-Sports",
+  }),
+);
+
+export default router;
