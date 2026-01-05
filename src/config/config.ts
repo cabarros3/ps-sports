@@ -5,11 +5,11 @@ import * as process from "process";
 dotenv.config();
 
 const [host, username, password, database, port] = [
-  process.env.MYSQL_HOST,
-  process.env.MYSQL_USER,
-  process.env.MYSQL_PASSWORD,
-  process.env.MYSQL_DATABASE,
-  Number(process.env.MYSQL_PORT),
+  process.env.DB_HOST,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
+  process.env.DB_SCHEMA,
+  Number(process.env.DB_PORT),
 ];
 
 const sequelize = new Sequelize({
