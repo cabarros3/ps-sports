@@ -2,7 +2,7 @@
 -- USE ps_sports; --
 
 CREATE TABLE users (
-  id INT NOT NULL AUTO_INCREMENT,
+  id BINARY(16) NOT NULL,
   name VARCHAR(100) NOT NULL,
   birth_date DATE NOT NULL,
   rg VARCHAR(45),
@@ -35,7 +35,7 @@ CREATE TABLE schools (
 );
 
 CREATE TABLE players (
-  id INT NOT NULL AUTO_INCREMENT,
+  id BINARY(16) NOT NULL,
   weigth DECIMAL(5,2),
   heigth DECIMAL(5,2),
   primary_position VARCHAR(45),
@@ -43,7 +43,7 @@ CREATE TABLE players (
   dominant_foot VARCHAR(45),
   entry_date DATETIME NOT NULL,
   sport_status VARCHAR(45),
-  notes VARCHAR(45),
+  notes TEXT,
   user_id INT NOT NULL,
   school_id INT NOT NULL,
   PRIMARY KEY (id),
@@ -74,7 +74,7 @@ CREATE TABLE roles (
 
 CREATE TABLE users_roles (
   id INT NOT NULL AUTO_INCREMENT,
-  user_id INT NOT NULL,
+  user_id BINARY(16) NOT NULL,
   role_id INT NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id),
