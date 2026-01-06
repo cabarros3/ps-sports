@@ -1,85 +1,82 @@
-import { Model, Optional, Sequelize, DataTypes } from "sequelize";
+import { DataTypes, Model, Sequelize } from "sequelize";
+import type { Optional } from "sequelize";
 
 interface IUsers {
-  USR_ID: string; // Alterado para string (UUID)
-  USR_NAME: string;
-  USR_BIRTH_DATE: Date;
-  USR_RG?: string;
-  USR_CPF: string;
-  USR_EMAIL: string;
-  USR_PASSWORD?: string;
-  USR_STATUS: "Ativo" | "Inativo";
-  USR_CREATED_AT?: Date;
-  USR_UPDATED_AT?: Date;
+  id: string; // Alterado para string (UUID)
+  name: string;
+  birth_date: Date;
+  rg?: string;
+  cpf: string;
+  email: string;
+  password?: string;
+  status: "Ativo" | "Inativo";
+  created_at?: Date;
+  updated_at?: Date;
 }
 
-interface UsersCreationAttributes extends Optional<IUsers, "USR_ID"> {}
+interface UsersCreationAttributes extends Optional<IUsers, "id"> {}
 
-export class Users
-  extends Model<IUsers, UsersCreationAttributes>
-  implements IUsers
-{
-  public USR_ID!: string;
-  public USR_NAME!: string;
-  public USR_BIRTH_DATE!: Date;
-  public USR_RG!: string;
-  public USR_CPF!: string;
-  public USR_EMAIL!: string;
-  public USR_PASSWORD!: string;
-  public USR_STATUS!: "Ativo" | "Inativo";
+export class Users extends Model<IUsers, UsersCreationAttributes>
+  implements IUsers {
+  public id!: string;
+  public name!: string;
+  public birth_date!: Date;
+  public rg?: string;
+  public cpf!: string;
+  public email!: string;
+  public password?: string;
+  public status!: "Ativo" | "Inativo";
 
-  public readonly USR_CREATED_AT!: Date;
-  public readonly USR_UPDATED_AT!: Date;
+  public readonly created_at!: Date;
+  public readonly updated_at!: Date;
 }
 
 export default function UsersModel(sequelize: Sequelize) {
   Users.init(
     {
-      USR_ID: {
+      id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },
-      USR_NAME: {
+      name: {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
-      USR_BIRTH_DATE: {
+      birth_date: {
         type: DataTypes.DATEONLY,
         allowNull: false,
       },
-      USR_RG: {
+      rg: {
         type: DataTypes.STRING(9),
-        allowNull: true,
       },
-      USR_CPF: {
+      cpf: {
         type: DataTypes.STRING(11),
         allowNull: false,
         unique: true,
       },
-      USR_EMAIL: {
+      email: {
         type: DataTypes.STRING(100),
         allowNull: false,
         unique: true,
         validate: { isEmail: true },
       },
-      USR_PASSWORD: {
+      password: {
         type: DataTypes.STRING(255),
         allowNull: false,
       },
-      USR_STATUS: {
+      status: {
         type: DataTypes.STRING(45),
         defaultValue: "Ativo",
       },
     },
     {
       sequelize,
-      tableName: "USERS",
+      tableName: "users",
       timestamps: true,
-      createdAt: "USR_CREATED_AT",
-      updatedAt: "USR_UPDATED_AT",
-      underscored: false,
-    }
+      createdAt: "created_at",
+      updatedAt: "updated_at",
+    },
   );
 
   return Users;
