@@ -38,6 +38,7 @@ export default function UsersModel(sequelize: Sequelize) {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
+        allowNull: false,
       },
       name: {
         type: DataTypes.STRING(100),
