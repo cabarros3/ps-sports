@@ -208,7 +208,7 @@ const routerUsers = express.Router();
 routerUsers.get("/", UsersController.listar);
 
 /**
- * @swagger
+ * @swaggersssss
  * /users/{id}:
  *   get:
  *     summary: Busca um usuário por ID
