@@ -1,13 +1,12 @@
 import express from "express";
+import { StaffsController } from "../controllers/StaffsController.ts";
 
-const routerStaff = express.Router();
+const routerStaffs = express.Router();
 
-// falta chamar os controllers?
+routerStaffs.post("/", StaffsController.criar);
+routerStaffs.get("/", StaffsController.listar);
+routerStaffs.get("/:id", StaffsController.buscarPorId);
+routerStaffs.put("/:id", StaffsController.atualizar);
+routerStaffs.delete("/:id", StaffsController.deletar);
 
-routerStaff.get("/", (req, res) => res.send("Listar staff"));
-routerStaff.get("/:id", (req, res) => res.send("Buscar staff"));
-routerStaff.post("/", (req, res) => res.send("Criar staff"));
-routerStaff.put("/:id", (req, res) => res.send("Atualizar staff"));
-routerStaff.delete("/:id", (req, res) => res.send("Deletar staff"));
-
-export default routerStaff;
+export default routerStaffs;

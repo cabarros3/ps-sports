@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Phones } from "../models/Phones.ts";
+import { Phones } from "../models/index.ts";
 
 export const PhonesController = {
     async criar(req: Request, res: Response) {
