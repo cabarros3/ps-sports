@@ -1,4 +1,5 @@
 import express from "express";
+import { LeadsController } from "../controllers/LeadsController.ts";
 
 const routerLeads = express.Router();
 
@@ -10,192 +11,130 @@ const routerLeads = express.Router();
  *       type: object
  *       properties:
  *         id:
- *           type: integer
- *           description: ID único do lead
- *         nome:
+ *           type: string
+ *           format: uuid
+ *           description: ID único do lead (UUID)
+ *         name:
  *           type: string
  *           description: Nome completo do lead
  *         email:
  *           type: string
  *           format: email
- *           description: Email do lead
- *         telefone:
+ *           description: Email único do lead
+ *         phone:
  *           type: string
- *           description: Telefone de contato
- *         empresa:
+ *           description: Telefone de contato do lead
+ *         entry_date:
  *           type: string
- *           description: Nome da empresa do lead
- *         cargo:
+ *           format: date-time
+ *           description: Data de entrada/cadastro do lead no sistema
+ *         source:
  *           type: string
- *           description: Cargo do lead na empresa
- *         origem:
- *           type: string
- *           enum: [site, landing_page, rede_social, indicacao, evento, email_marketing, outro]
- *           description: Origem de captação do lead
+ *           description: Origem/fonte de captação do lead
  *         status:
  *           type: string
- *           enum: [novo, contatado, qualificado, proposta, negociacao, ganho, perdido]
- *           description: Status atual do lead no funil de vendas
- *         interesse:
+ *           enum: [Novo, Em contato, Agendado, Convertido, Desqualificado]
+ *           description: Status atual do lead no funil
+ *         magic_token:
  *           type: string
- *           description: Curso ou produto de interesse do lead
- *         observacoes:
- *           type: string
- *           description: Observações e anotações sobre o lead
- *         pontuacao:
- *           type: integer
- *           description: Pontuação de qualificação do lead (lead scoring)
- *           minimum: 0
- *           maximum: 100
- *         data_primeiro_contato:
+ *           description: Token mágico para acesso temporário (uso futuro)
+ *         magic_expires_at:
  *           type: string
  *           format: date-time
- *           description: Data do primeiro contato com o lead
- *         data_ultima_interacao:
- *           type: string
- *           format: date-time
- *           description: Data da última interação com o lead
- *         responsavel_id:
- *           type: integer
- *           description: ID do usuário responsável pelo lead
- *         created_at:
- *           type: string
- *           format: date-time
- *           description: Data de criação do registro
- *         updated_at:
- *           type: string
- *           format: date-time
- *           description: Data da última atualização
+ *           description: Data de expiração do token mágico
  *       example:
- *         id: 1
- *         nome: "Carlos Oliveira"
+ *         id: "550e8400-e29b-41d4-a716-446655440000"
+ *         name: "Carlos Oliveira"
  *         email: "carlos.oliveira@empresa.com"
- *         telefone: "+55 81 99999-8888"
- *         empresa: "Tech Solutions LTDA"
- *         cargo: "Gerente de TI"
- *         origem: "landing_page"
- *         status: "qualificado"
- *         interesse: "Curso de AWS e Cloud Computing"
- *         observacoes: "Interessado em treinamento corporativo para equipe de 10 pessoas"
- *         pontuacao: 85
- *         data_primeiro_contato: "2024-01-15T10:30:00Z"
- *         data_ultima_interacao: "2024-01-20T14:45:00Z"
- *         responsavel_id: 5
- *         created_at: "2024-01-15T10:30:00Z"
- *         updated_at: "2024-01-20T14:45:00Z"
+ *         phone: "+55 81 99999-8888"
+ *         entry_date: "2024-01-15T10:30:00Z"
+ *         source: "Site - Formulário de contato"
+ *         status: "Novo"
+ *         magic_token: ""
+ *         magic_expires_at: "2024-01-22T10:30:00Z"
  *
  *     LeadInput:
  *       type: object
  *       required:
- *         - nome
+ *         - name
  *         - email
  *       properties:
- *         nome:
+ *         name:
  *           type: string
  *           description: Nome completo do lead
- *           minLength: 3
- *           maxLength: 150
  *         email:
  *           type: string
  *           format: email
- *           description: Email do lead
- *         telefone:
+ *           description: Email único do lead
+ *         phone:
  *           type: string
  *           description: Telefone de contato
- *           pattern: '^\+?[1-9]\d{1,14}$'
- *         empresa:
+ *         source:
  *           type: string
- *           description: Nome da empresa do lead
- *           maxLength: 150
- *         cargo:
- *           type: string
- *           description: Cargo do lead na empresa
- *           maxLength: 100
- *         origem:
- *           type: string
- *           enum: [site, landing_page, rede_social, indicacao, evento, email_marketing, outro]
- *           description: Origem de captação do lead
- *           default: site
+ *           description: Origem de captação do lead (ex. site, landing page, indicação)
  *         status:
  *           type: string
- *           enum: [novo, contatado, qualificado, proposta, negociacao, ganho, perdido]
- *           description: Status atual do lead
- *           default: novo
- *         interesse:
- *           type: string
- *           description: Curso ou produto de interesse
- *           maxLength: 200
- *         observacoes:
- *           type: string
- *           description: Observações sobre o lead
- *           maxLength: 1000
- *         pontuacao:
- *           type: integer
- *           description: Pontuação de qualificação (0-100)
- *           minimum: 0
- *           maximum: 100
- *           default: 0
- *         responsavel_id:
- *           type: integer
- *           description: ID do responsável pelo lead
+ *           enum: [Novo, Em contato, Agendado, Convertido, Desqualificado]
+ *           description: Status inicial do lead
+ *           default: Novo
  *       example:
- *         nome: "Ana Paula Costa"
+ *         name: "Ana Paula Costa"
  *         email: "ana.costa@startup.com"
- *         telefone: "+55 81 98888-7777"
- *         empresa: "StartupXYZ"
- *         cargo: "CEO"
- *         origem: "evento"
- *         status: "novo"
- *         interesse: "Programa de Aceleração Empresarial"
- *         observacoes: "Conheceu a empresa no evento TechWeek 2024"
- *         pontuacao: 70
- *         responsavel_id: 3
+ *         phone: "+55 81 98888-7777"
+ *         source: "Landing Page - Ebook Marketing Digital"
+ *         status: "Novo"
  *
  *     LeadUpdate:
  *       type: object
  *       properties:
- *         nome:
+ *         name:
  *           type: string
  *           description: Nome completo do lead
- *           minLength: 3
- *           maxLength: 150
  *         email:
  *           type: string
  *           format: email
  *           description: Email do lead
- *         telefone:
+ *         phone:
  *           type: string
  *           description: Telefone de contato
- *         empresa:
+ *         source:
  *           type: string
- *           description: Nome da empresa
- *         cargo:
- *           type: string
- *           description: Cargo na empresa
- *         origem:
- *           type: string
- *           enum: [site, landing_page, rede_social, indicacao, evento, email_marketing, outro]
+ *           description: Origem de captação
  *         status:
  *           type: string
- *           enum: [novo, contatado, qualificado, proposta, negociacao, ganho, perdido]
- *         interesse:
+ *           enum: [Novo, Em contato, Agendado, Convertido, Desqualificado]
+ *           description: Status do lead
+ *         magic_token:
  *           type: string
- *           description: Interesse do lead
- *         observacoes:
+ *           description: Token mágico para acesso
+ *         magic_expires_at:
  *           type: string
- *           description: Observações
- *         pontuacao:
- *           type: integer
- *           minimum: 0
- *           maximum: 100
- *         responsavel_id:
- *           type: integer
- *           description: ID do responsável
+ *           format: date-time
+ *           description: Data de expiração do token
  *       example:
- *         status: "contatado"
- *         observacoes: "Primeiro contato realizado. Demonstrou interesse em reunião"
- *         pontuacao: 75
- *         data_ultima_interacao: "2024-01-21T09:15:00Z"
+ *         name: "Ana Paula Costa Silva"
+ *         status: "Em contato"
+ *         phone: "+55 81 98888-7777"
+ *
+ *     LeadListResponse:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *         email:
+ *           type: string
+ *         phone:
+ *           type: string
+ *         source:
+ *           type: string
+ *         status:
+ *           type: string
+ *       example:
+ *         name: "Carlos Oliveira"
+ *         email: "carlos.oliveira@empresa.com"
+ *         phone: "+55 81 99999-8888"
+ *         source: "Site"
+ *         status: "Novo"
  *
  *     LeadError:
  *       type: object
@@ -203,6 +142,9 @@ const routerLeads = express.Router();
  *         error:
  *           type: string
  *           description: Mensagem de erro
+ *         message:
+ *           type: string
+ *           description: Descrição detalhada do erro
  *       example:
  *         error: "Lead não encontrado"
  *
@@ -215,23 +157,22 @@ const routerLeads = express.Router();
  *       example:
  *         mensagem: "Lead removido com sucesso"
  *
- *     LeadAtualizadoResponse:
+ *     LeadUpdateResponse:
  *       type: object
  *       properties:
- *         lead:
+ *         leadId:
  *           $ref: '#/components/schemas/Lead'
  *         mensagem:
  *           type: string
  *       example:
- *         lead:
- *           id: 1
- *           nome: "Carlos Oliveira"
+ *         leadId:
+ *           id: "550e8400-e29b-41d4-a716-446655440000"
+ *           name: "Carlos Oliveira Atualizado"
  *           email: "carlos.oliveira@empresa.com"
- *           status: "proposta"
- *           pontuacao: 90
- *           observacoes: "Proposta comercial enviada. Aguardando retorno"
- *           created_at: "2024-01-15T10:30:00Z"
- *           updated_at: "2024-01-22T16:30:00Z"
+ *           phone: "+55 81 99999-8888"
+ *           source: "Site"
+ *           status: "Em contato"
+ *           entry_date: "2024-01-15T10:30:00Z"
  *         mensagem: "Lead atualizado com sucesso"
  *
  *   tags:
@@ -244,124 +185,17 @@ const routerLeads = express.Router();
  * /leads:
  *   get:
  *     summary: Lista todos os leads
- *     description: Retorna uma lista com todos os leads cadastrados no sistema, com opções de filtro e ordenação
+ *     description: Retorna uma lista simplificada com todos os leads cadastrados no sistema (name, email, phone, source, status). Dados sensíveis como magic_token não são retornados
  *     tags: [Leads]
- *     parameters:
- *       - in: query
- *         name: status
- *         schema:
- *           type: string
- *           enum: [novo, contatado, qualificado, proposta, negociacao, ganho, perdido]
- *         description: Filtrar leads por status
- *         example: qualificado
- *       - in: query
- *         name: origem
- *         schema:
- *           type: string
- *           enum: [site, landing_page, rede_social, indicacao, evento, email_marketing, outro]
- *         description: Filtrar leads por origem
- *         example: landing_page
- *       - in: query
- *         name: responsavel_id
- *         schema:
- *           type: integer
- *         description: Filtrar leads por responsável
- *         example: 5
- *       - in: query
- *         name: pontuacao_min
- *         schema:
- *           type: integer
- *           minimum: 0
- *           maximum: 100
- *         description: Pontuação mínima para filtro
- *         example: 70
- *       - in: query
- *         name: data_inicio
- *         schema:
- *           type: string
- *           format: date
- *         description: Data inicial para filtro de criação
- *         example: "2024-01-01"
- *       - in: query
- *         name: data_fim
- *         schema:
- *           type: string
- *           format: date
- *         description: Data final para filtro de criação
- *         example: "2024-01-31"
- *       - in: query
- *         name: busca
- *         schema:
- *           type: string
- *         description: Buscar por nome, email ou empresa
- *         example: "carlos"
- *       - in: query
- *         name: ordenar_por
- *         schema:
- *           type: string
- *           enum: [created_at, updated_at, pontuacao, nome]
- *         description: Campo para ordenação
- *         example: pontuacao
- *       - in: query
- *         name: ordem
- *         schema:
- *           type: string
- *           enum: [asc, desc]
- *         description: Ordem de classificação
- *         example: desc
- *       - in: query
- *         name: limite
- *         schema:
- *           type: integer
- *           minimum: 1
- *           maximum: 100
- *         description: Número máximo de resultados
- *         example: 20
- *       - in: query
- *         name: pagina
- *         schema:
- *           type: integer
- *           minimum: 1
- *         description: Número da página
- *         example: 1
  *     responses:
  *       200:
  *         description: Lista de leads retornada com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 leads:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Lead'
- *                 total:
- *                   type: integer
- *                   description: Total de leads encontrados
- *                 pagina:
- *                   type: integer
- *                   description: Página atual
- *                 totalPaginas:
- *                   type: integer
- *                   description: Total de páginas
- *                 estatisticas:
- *                   type: object
- *                   properties:
- *                     por_status:
- *                       type: object
- *                       description: Contagem de leads por status
- *                     pontuacao_media:
- *                       type: number
- *                       description: Pontuação média dos leads
- *       401:
- *         description: Não autorizado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/LeadError'
- *             example:
- *               error: "Token de autenticação inválido"
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/LeadListResponse'
  *       500:
  *         description: Erro interno do servidor
  *         content:
@@ -369,25 +203,26 @@ const routerLeads = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/LeadError'
  *             example:
- *               error: "Erro ao listar leads"
+ *               error: "Erro ao buscar leads no banco de dados"
  */
-routerLeads.get("/", (req, res) => res.send("Listar leads"));
+routerLeads.get("/", LeadsController.listar);
 
 /**
  * @swagger
  * /leads/{id}:
  *   get:
  *     summary: Busca um lead por ID
- *     description: Retorna os dados completos de um lead específico através do seu ID
+ *     description: Retorna os dados completos de um lead específico através do seu ID (UUID)
  *     tags: [Leads]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
- *         description: ID numérico do lead
- *         example: 1
+ *           type: string
+ *           format: uuid
+ *         description: UUID do lead
+ *         example: "550e8400-e29b-41d4-a716-446655440000"
  *     responses:
  *       200:
  *         description: Lead encontrado com sucesso
@@ -403,33 +238,29 @@ routerLeads.get("/", (req, res) => res.send("Listar leads"));
  *               $ref: '#/components/schemas/LeadError'
  *             example:
  *               error: "Lead não encontrado"
- *       401:
- *         description: Não autorizado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/LeadError'
- *             example:
- *               error: "Acesso não autorizado"
- *       400:
- *         description: ID inválido
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/LeadError'
- *             example:
- *               error: "ID deve ser um número inteiro válido"
  *       500:
- *         description: Erro interno do servidor
+ *         description: ID inválido ou erro no servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 error:
+ *                   type: string
+ *             example:
+ *               message: "ID fornecido é inválido ou erro no servidor"
+ *               error: "invalid input syntax for type uuid"
  */
-routerLeads.get("/:id", (req, res) => res.send("Buscar lead"));
+routerLeads.get("/:id", LeadsController.buscarPorId);
 
 /**
  * @swagger
  * /leads:
  *   post:
  *     summary: Cria um novo lead
- *     description: Cadastra um novo lead no sistema com informações de contato, origem e interesse
+ *     description: Cadastra um novo lead no sistema. O email deve ser único. Os campos magic_token e magic_expires_at são gerados automaticamente (implementação futura). A entry_date é definida automaticamente como a data atual
  *     tags: [Leads]
  *     requestBody:
  *       required: true
@@ -445,52 +276,50 @@ routerLeads.get("/:id", (req, res) => res.send("Buscar lead"));
  *             schema:
  *               $ref: '#/components/schemas/Lead'
  *       400:
- *         description: Dados inválidos
+ *         description: Dados inválidos ou erro na criação
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/LeadError'
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 error:
+ *                   type: string
  *             examples:
- *               campoObrigatorio:
- *                 value:
- *                   error: "Nome e email são campos obrigatórios"
  *               emailInvalido:
  *                 value:
- *                   error: "Formato de email inválido"
- *               telefoneInvalido:
+ *                   message: "Não foi possível criar o lead"
+ *                   error: "Validation error: email must be valid"
+ *               emailDuplicado:
  *                 value:
- *                   error: "Formato de telefone inválido"
- *               pontuacaoInvalida:
+ *                   message: "Não foi possível criar o lead"
+ *                   error: "Unique constraint failed: email"
+ *               campoObrigatorio:
  *                 value:
- *                   error: "Pontuação deve estar entre 0 e 100"
- *       409:
- *         description: Conflito - lead com este email já existe
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/LeadError'
- *             example:
- *               error: "Já existe um lead cadastrado com este email"
+ *                   message: "Não foi possível criar o lead"
+ *                   error: "notNull Violation: name cannot be null"
  *       500:
  *         description: Erro interno do servidor
  */
-routerLeads.post("/", (req, res) => res.send("Criar lead"));
+routerLeads.post("/", LeadsController.criar);
 
 /**
  * @swagger
  * /leads/{id}:
  *   put:
  *     summary: Atualiza um lead existente
- *     description: Atualiza os dados de um lead específico, incluindo status, pontuação e observações do funil de vendas
+ *     description: Atualiza os dados de um lead específico. Todos os campos são opcionais. Se um campo não for enviado, o valor atual será mantido. O campo entry_date não pode ser alterado
  *     tags: [Leads]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
- *         description: ID numérico do lead
- *         example: 1
+ *           type: string
+ *           format: uuid
+ *         description: UUID do lead
+ *         example: "550e8400-e29b-41d4-a716-446655440000"
  *     requestBody:
  *       required: true
  *       content:
@@ -503,67 +332,50 @@ routerLeads.post("/", (req, res) => res.send("Criar lead"));
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/LeadAtualizadoResponse'
+ *               $ref: '#/components/schemas/LeadUpdateResponse'
  *       404:
- *         description: Lead não encontrado
+ *         description: Lead não encontrado para atualização
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/LeadError'
  *             example:
- *               error: "Lead não encontrado"
- *       400:
- *         description: Dados inválidos
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/LeadError'
- *             examples:
- *               emailInvalido:
- *                 value:
- *                   error: "Formato de email inválido"
- *               statusInvalido:
- *                 value:
- *                   error: "Status inválido"
- *               pontuacaoInvalida:
- *                 value:
- *                   error: "Pontuação deve estar entre 0 e 100"
- *       401:
- *         description: Não autorizado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/LeadError'
- *             example:
- *               error: "Você não tem permissão para atualizar este lead"
+ *               error: "Lead não encontrado para atualização"
  *       409:
- *         description: Conflito - email já usado por outro lead
+ *         description: Conflito - email já está em uso por outro lead
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/LeadError'
  *             example:
- *               error: "Este email já está sendo usado por outro lead"
+ *               error: "O novo e-mail já está em uso por outro lead."
  *       500:
- *         description: Erro interno do servidor
+ *         description: Erro ao atualizar o lead
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LeadError'
+ *             example:
+ *               error: "Erro ao atualizar o lead"
  */
-routerLeads.put("/:id", (req, res) => res.send("Atualizar lead"));
+routerLeads.put("/:id", LeadsController.atualizar);
 
 /**
  * @swagger
  * /leads/{id}:
  *   delete:
  *     summary: Remove um lead
- *     description: Realiza a exclusão de um lead através do seu ID. Leads com histórico de interações extenso podem ser arquivados ao invés de removidos
+ *     description: Realiza a exclusão permanente de um lead através do seu ID (UUID)
  *     tags: [Leads]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
- *         description: ID numérico do lead
- *         example: 1
+ *           type: string
+ *           format: uuid
+ *         description: UUID do lead
+ *         example: "550e8400-e29b-41d4-a716-446655440000"
  *     responses:
  *       200:
  *         description: Lead removido com sucesso
@@ -581,25 +393,21 @@ routerLeads.put("/:id", (req, res) => res.send("Atualizar lead"));
  *               $ref: '#/components/schemas/LeadError'
  *             example:
  *               error: "Lead não encontrado"
- *       401:
- *         description: Não autorizado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/LeadError'
- *             example:
- *               error: "Você não tem permissão para remover este lead"
- *       409:
- *         description: Conflito - lead possui histórico que deve ser arquivado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/LeadError'
- *             example:
- *               error: "Lead possui histórico extenso. Considere arquivar ao invés de remover"
  *       500:
- *         description: Erro interno do servidor
+ *         description: Erro ao deletar o lead
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensagem:
+ *                   type: string
+ *                 error:
+ *                   type: string
+ *             example:
+ *               mensagem: "Erro ao deletar o lead"
+ *               error: "Database connection timeout"
  */
-routerLeads.delete("/:id", (req, res) => res.send("Deletar lead"));
+routerLeads.delete("/:id", LeadsController.deletar);
 
 export default routerLeads;

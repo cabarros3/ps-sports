@@ -1,8 +1,12 @@
 import express from "express";
 import router from "./router.ts";
+import { config } from "dotenv";
+import { env } from "process";
+
+config();
 
 const server = express();
-const PORTA = 3000;
+const PORTA = Number(env.SERVER_PORT) || 3000;
 
 server.use(express.json());
 server.use("/", router);

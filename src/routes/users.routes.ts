@@ -1,4 +1,5 @@
 import express from "express";
+import { UsersController } from "../controllers/UsersController.ts";
 
 const routerUsers = express.Router();
 
@@ -6,34 +7,36 @@ const routerUsers = express.Router();
  * @swagger
  * components:
  *   schemas:
- *     Usuario:
+ *     User:
  *       type: object
  *       properties:
  *         id:
- *           type: integer
- *           description: ID único do usuário
- *         nome:
+ *           type: string
+ *           format: uuid
+ *           description: ID único do usuário (UUID)
+ *         name:
  *           type: string
  *           description: Nome completo do usuário
+ *         birth_date:
+ *           type: string
+ *           format: date
+ *           description: Data de nascimento do usuário
+ *         rg:
+ *           type: string
+ *           description: RG do usuário (opcional)
+ *           maxLength: 9
+ *         cpf:
+ *           type: string
+ *           description: CPF único do usuário
+ *           maxLength: 11
  *         email:
  *           type: string
  *           format: email
  *           description: Email único do usuário
- *         senha:
+ *         status:
  *           type: string
- *           format: password
- *           description: Senha do usuário (retornada apenas em hash)
- *         tipo:
- *           type: string
- *           enum: [admin, professor, aluno]
- *           description: Tipo/perfil do usuário no sistema
- *         ativo:
- *           type: boolean
- *           description: Indica se o usuário está ativo
- *         avatar:
- *           type: string
- *           format: uri
- *           description: URL da foto de perfil do usuário
+ *           enum: [Ativo, Inativo]
+ *           description: Status do usuário no sistema
  *         created_at:
  *           type: string
  *           format: date-time
@@ -43,100 +46,107 @@ const routerUsers = express.Router();
  *           format: date-time
  *           description: Data da última atualização
  *       example:
- *         id: 1
- *         nome: "Maria Silva"
+ *         id: "550e8400-e29b-41d4-a716-446655440000"
+ *         name: "Maria Silva Santos"
+ *         birth_date: "1990-05-15"
+ *         rg: "123456789"
+ *         cpf: "12345678901"
  *         email: "maria.silva@example.com"
- *         tipo: "professor"
- *         ativo: true
- *         avatar: "https://example.com/avatars/maria.jpg"
+ *         status: "Ativo"
  *         created_at: "2024-01-15T10:30:00Z"
  *         updated_at: "2024-01-15T10:30:00Z"
  *
- *     UsuarioInput:
+ *     UserInput:
  *       type: object
  *       required:
- *         - nome
+ *         - name
+ *         - birthDate
+ *         - cpf
  *         - email
- *         - senha
- *         - tipo
+ *         - password
  *       properties:
- *         nome:
+ *         name:
  *           type: string
  *           description: Nome completo do usuário
- *           minLength: 3
- *           maxLength: 150
+ *           maxLength: 100
+ *         birthDate:
+ *           type: string
+ *           format: date
+ *           description: Data de nascimento do usuário
+ *         rg:
+ *           type: string
+ *           description: RG do usuário (opcional)
+ *           maxLength: 9
+ *         cpf:
+ *           type: string
+ *           description: CPF único do usuário (apenas números)
+ *           maxLength: 11
  *         email:
  *           type: string
  *           format: email
  *           description: Email único do usuário
- *         senha:
+ *           maxLength: 100
+ *         password:
  *           type: string
  *           format: password
  *           description: Senha do usuário
- *           minLength: 8
- *         tipo:
+ *           minLength: 6
+ *         status:
  *           type: string
- *           enum: [admin, professor, aluno]
- *           description: Tipo/perfil do usuário
- *         ativo:
- *           type: boolean
+ *           enum: [Ativo, Inativo]
  *           description: Status do usuário
- *           default: true
- *         avatar:
- *           type: string
- *           format: uri
- *           description: URL da foto de perfil
+ *           default: Ativo
  *       example:
- *         nome: "João Santos"
+ *         name: "João Santos Silva"
+ *         birthDate: "1995-08-20"
+ *         rg: "987654321"
+ *         cpf: "98765432100"
  *         email: "joao.santos@example.com"
- *         senha: "senhaSegura123"
- *         tipo: "aluno"
- *         ativo: true
- *         avatar: "https://example.com/avatars/joao.jpg"
+ *         password: "senhaSegura123"
+ *         status: "Ativo"
  *
- *     UsuarioUpdate:
+ *     UserUpdate:
  *       type: object
  *       properties:
- *         nome:
+ *         name:
  *           type: string
  *           description: Nome completo do usuário
- *           minLength: 3
- *           maxLength: 150
+ *           maxLength: 100
+ *         birthDate:
+ *           type: string
+ *           format: date
+ *           description: Data de nascimento do usuário
+ *         rg:
+ *           type: string
+ *           description: RG do usuário
+ *           maxLength: 9
  *         email:
  *           type: string
  *           format: email
  *           description: Email único do usuário
- *         senha:
+ *           maxLength: 100
+ *         status:
  *           type: string
- *           format: password
- *           description: Nova senha do usuário (opcional)
- *           minLength: 8
- *         tipo:
- *           type: string
- *           enum: [admin, professor, aluno]
- *           description: Tipo/perfil do usuário
- *         ativo:
- *           type: boolean
+ *           enum: [Ativo, Inativo]
  *           description: Status do usuário
- *         avatar:
- *           type: string
- *           format: uri
- *           description: URL da foto de perfil
  *       example:
- *         nome: "João Santos Atualizado"
+ *         name: "João Santos Silva Atualizado"
  *         email: "joao.novo@example.com"
- *         ativo: true
+ *         status: "Ativo"
  *
- *     UsuarioError:
+ *     UserError:
  *       type: object
  *       properties:
  *         error:
  *           type: string
  *           description: Mensagem de erro
+ *         message:
+ *           type: string
+ *           description: Mensagem descritiva do erro
  *       example:
  *         error: "Usuário não encontrado"
  *
- *     UsuarioSuccessMessage:
+ *     UserSuccessMessage:
  *       type: object
  *       properties:
  *         mensagem:
@@ -145,304 +155,231 @@ const routerUsers = express.Router();
  *       example:
  *         mensagem: "Usuário removido com sucesso"
  *
- *     UsuarioAtualizadoResponse:
+ *     UserUpdateResponse:
  *       type: object
  *       properties:
- *         usuario:
- *           $ref: '#/components/schemas/Usuario'
- *         mensagem:
+ *         message:
  *           type: string
+ *           description: Mensagem de sucesso
+ *         user:
+ *           $ref: '#/components/schemas/User'
  *       example:
- *         usuario:
- *           id: 1
- *           nome: "Maria Silva Atualizada"
+ *         message: "Usuário atualizado com sucesso"
+ *         user:
+ *           id: "550e8400-e29b-41d4-a716-446655440000"
+ *           name: "Maria Silva Atualizada"
+ *           birth_date: "1990-05-15"
+ *           cpf: "12345678901"
  *           email: "maria.nova@example.com"
- *           tipo: "professor"
- *           ativo: true
- *           avatar: "https://example.com/avatars/maria-novo.jpg"
+ *           status: "Ativo"
  *           created_at: "2024-01-15T10:30:00Z"
  *           updated_at: "2024-01-16T14:20:00Z"
- *         mensagem: "Usuário atualizado com sucesso"
  *
  *   tags:
- *     - name: Usuarios
+ *     - name: Users
  *       description: Gerenciamento de usuários do sistema
  */
 
 /**
  * @swagger
- * /usuarios:
+ * /users:
  *   get:
  *     summary: Lista todos os usuários
- *     description: Retorna uma lista com todos os usuários cadastrados no sistema
- *     tags: [Usuarios]
- *     parameters:
- *       - in: query
- *         name: tipo
- *         schema:
- *           type: string
- *           enum: [admin, professor, aluno]
- *         description: Filtrar usuários por tipo/perfil
- *         example: professor
- *       - in: query
- *         name: ativo
- *         schema:
- *           type: boolean
- *         description: Filtrar apenas usuários ativos ou inativos
- *         example: true
- *       - in: query
- *         name: busca
- *         schema:
- *           type: string
- *         description: Buscar por nome ou email
- *         example: "maria"
- *       - in: query
- *         name: limite
- *         schema:
- *           type: integer
- *           minimum: 1
- *           maximum: 100
- *         description: Número máximo de resultados a retornar
- *         example: 20
- *       - in: query
- *         name: pagina
- *         schema:
- *           type: integer
- *           minimum: 1
- *         description: Número da página para paginação
- *         example: 1
+ *     description: Retorna uma lista com todos os usuários cadastrados no sistema. A senha não é retornada por segurança
+ *     tags: [Users]
  *     responses:
  *       200:
  *         description: Lista de usuários retornada com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 usuarios:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Usuario'
- *                 total:
- *                   type: integer
- *                   description: Total de usuários encontrados
- *                 pagina:
- *                   type: integer
- *                   description: Página atual
- *                 totalPaginas:
- *                   type: integer
- *                   description: Total de páginas
- *       401:
- *         description: Não autorizado - token ausente ou inválido
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/UsuarioError'
- *             example:
- *               error: "Token de autenticação inválido"
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
  *       500:
  *         description: Erro interno do servidor
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/UsuarioError'
+ *               $ref: '#/components/schemas/UserError'
  *             example:
- *               error: "Erro ao listar usuários"
+ *               error: "Erro ao buscar usuários"
  */
-routerUsers.get("/", (req, res) => res.send("Listar usuários"));
+routerUsers.get("/", UsersController.listar);
 
 /**
  * @swagger
- * /usuarios/{id}:
+ * /users/{id}:
  *   get:
  *     summary: Busca um usuário por ID
- *     description: Retorna os dados de um usuário específico através do seu ID
- *     tags: [Usuarios]
+ *     description: Retorna os dados de um usuário específico através do seu ID (UUID). A senha não é retornada por segurança
+ *     tags: [Users]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
- *         description: ID numérico do usuário
- *         example: 1
+ *           type: string
+ *           format: uuid
+ *         description: UUID do usuário
+ *         example: "550e8400-e29b-41d4-a716-446655440000"
  *     responses:
  *       200:
  *         description: Usuário encontrado com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Usuario'
+ *               $ref: '#/components/schemas/User'
  *       404:
  *         description: Usuário não encontrado
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/UsuarioError'
+ *               $ref: '#/components/schemas/UserError'
  *             example:
  *               error: "Usuário não encontrado"
- *       401:
- *         description: Não autorizado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/UsuarioError'
- *             example:
- *               error: "Acesso não autorizado"
- *       400:
- *         description: ID inválido
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/UsuarioError'
- *             example:
- *               error: "ID deve ser um número inteiro válido"
  *       500:
- *         description: Erro interno do servidor
+ *         description: ID inválido ou erro no servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 error:
+ *                   type: string
+ *             example:
+ *               message: "ID inválido ou erro no servidor"
+ *               error: "invalid input syntax for type uuid"
  */
-routerUsers.get("/:id", (req, res) => res.send("Buscar usuário"));
+routerUsers.get("/:id", UsersController.buscarPorId);
 
 /**
  * @swagger
- * /usuarios:
+ * /users:
  *   post:
  *     summary: Cria um novo usuário
- *     description: Cadastra um novo usuário no sistema com nome, email, senha e tipo de perfil
- *     tags: [Usuarios]
+ *     description: Cadastra um novo usuário no sistema. O email e CPF devem ser únicos. A senha será armazenada com hash (implementação futura com bcrypt)
+ *     tags: [Users]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/UsuarioInput'
+ *             $ref: '#/components/schemas/UserInput'
  *     responses:
  *       201:
  *         description: Usuário criado com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Usuario'
+ *               $ref: '#/components/schemas/User'
  *       400:
- *         description: Dados inválidos
+ *         description: Dados inválidos ou email já cadastrado
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/UsuarioError'
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 error:
+ *                   type: string
  *             examples:
- *               campoObrigatorio:
+ *               emailJaCadastrado:
  *                 value:
- *                   error: "Todos os campos obrigatórios devem ser preenchidos"
- *               emailInvalido:
+ *                   message: "E-mail já cadastrado"
+ *               erroValidacao:
  *                 value:
- *                   error: "Formato de email inválido"
- *               senhaFraca:
+ *                   message: "Erro ao criar usuário"
+ *                   error: "Validation error: email must be valid"
+ *               cpfDuplicado:
  *                 value:
- *                   error: "A senha deve ter no mínimo 8 caracteres"
- *       409:
- *         description: Conflito - email já cadastrado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/UsuarioError'
- *             example:
- *               error: "Este email já está cadastrado"
+ *                   message: "Erro ao criar usuário"
+ *                   error: "Unique constraint failed: cpf"
  *       500:
  *         description: Erro interno do servidor
  */
-routerUsers.post("/", (req, res) => res.send("Criar usuário"));
+routerUsers.post("/", UsersController.criar);
 
 /**
  * @swagger
- * /usuarios/{id}:
+ * /users/{id}:
  *   put:
  *     summary: Atualiza um usuário existente
- *     description: Atualiza os dados de um usuário específico através do seu ID
- *     tags: [Usuarios]
+ *     description: Atualiza os dados de um usuário específico através do seu ID. CPF e senha não podem ser alterados por esta rota. A senha será removida da resposta por segurança
+ *     tags: [Users]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
- *         description: ID numérico do usuário
- *         example: 1
+ *           type: string
+ *           format: uuid
+ *         description: UUID do usuário
+ *         example: "550e8400-e29b-41d4-a716-446655440000"
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/UsuarioUpdate'
+ *             $ref: '#/components/schemas/UserUpdate'
  *     responses:
  *       200:
  *         description: Usuário atualizado com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/UsuarioAtualizadoResponse'
+ *               $ref: '#/components/schemas/UserUpdateResponse'
  *       404:
  *         description: Usuário não encontrado
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/UsuarioError'
+ *               $ref: '#/components/schemas/UserError'
  *             example:
  *               error: "Usuário não encontrado"
- *       400:
- *         description: Dados inválidos
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/UsuarioError'
- *             examples:
- *               emailInvalido:
- *                 value:
- *                   error: "Formato de email inválido"
- *               senhaFraca:
- *                 value:
- *                   error: "A senha deve ter no mínimo 8 caracteres"
- *       401:
- *         description: Não autorizado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/UsuarioError'
- *             example:
- *               error: "Você não tem permissão para atualizar este usuário"
- *       409:
- *         description: Conflito - email já cadastrado para outro usuário
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/UsuarioError'
- *             example:
- *               error: "Este email já está sendo usado por outro usuário"
  *       500:
- *         description: Erro interno do servidor
+ *         description: Erro interno ao atualizar usuário
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 error:
+ *                   type: string
+ *             example:
+ *               message: "Erro interno ao atualizar usuário"
+ *               error: "Database connection failed"
  */
-routerUsers.put("/:id", (req, res) => res.send("Atualizar usuário"));
+routerUsers.put("/:id", UsersController.atualizar);
 
 /**
  * @swagger
- * /usuarios/{id}:
+ * /users/{id}:
  *   delete:
  *     summary: Remove um usuário
- *     description: Realiza a exclusão de um usuário através do seu ID. Usuários com dependências ativas (matrículas, cursos) podem não ser removidos
- *     tags: [Usuarios]
+ *     description: Realiza a exclusão permanente de um usuário através do seu ID (UUID)
+ *     tags: [Users]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
- *         description: ID numérico do usuário
- *         example: 1
+ *           type: string
+ *           format: uuid
+ *         description: UUID do usuário
+ *         example: "550e8400-e29b-41d4-a716-446655440000"
  *     responses:
  *       200:
  *         description: Usuário removido com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/UsuarioSuccessMessage'
+ *               $ref: '#/components/schemas/UserSuccessMessage'
  *             example:
  *               mensagem: "Usuário removido com sucesso"
  *       404:
@@ -450,33 +387,24 @@ routerUsers.put("/:id", (req, res) => res.send("Atualizar usuário"));
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/UsuarioError'
+ *               $ref: '#/components/schemas/UserError'
  *             example:
  *               error: "Usuário não encontrado"
- *       401:
- *         description: Não autorizado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/UsuarioError'
- *             example:
- *               error: "Você não tem permissão para remover este usuário"
- *       409:
- *         description: Conflito - usuário possui dependências ativas
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/UsuarioError'
- *             examples:
- *               professorComCursos:
- *                 value:
- *                   error: "Não é possível remover professor com cursos ativos"
- *               alunoComMatriculas:
- *                 value:
- *                   error: "Não é possível remover aluno com matrículas ativas"
  *       500:
- *         description: Erro interno do servidor
+ *         description: Erro ao deletar usuário
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 error:
+ *                   type: string
+ *             example:
+ *               message: "Erro ao deletar usuário"
+ *               error: "Foreign key constraint failed"
  */
-routerUsers.delete("/:id", (req, res) => res.send("Deletar usuário"));
+routerUsers.delete("/:id", UsersController.deletar);
 
 export default routerUsers;

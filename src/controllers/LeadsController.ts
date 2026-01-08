@@ -1,49 +1,48 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import { Leads } from "../models/Leads.ts";
 
 export const LeadsController = {
   async criar(req: Request, res: Response) {
     try {
-      const { LD_NAME, LDS_EMAIL, LDS_PHONE, LDS_SOURCE, LDS_STATUS } =
-        req.body;
+      const { name, email, phone, source, status } = req.body;
 
       const lead = await Leads.create({
-        LD_NAME,
-        LDS_EMAIL,
-        LDS_PHONE,
-        LDS_SOURCE,
-        LDS_STATUS: LDS_STATUS || "Novo",
-        LDS_ENTRY_DATE: new Date(),
-        LDS_MAGIC_TOKEN: "", // verificar depois como fica
-        LDS_MAGIC_EXPIRES_AT: new Date(),
+        name,
+        email,
+        phone,
+        source,
+        status: status || "Novo",
+        entry_date: new Date(),
+        magic_token: "", // verificar depois como fica
+        magic_expires_at: new Date(),
       });
 
       return res.status(201).json(lead);
-    } catch (error: any) {
-      console.error("Erro ao criar lead:", error);
+    } catch (error) {
+      console.error("Erro ao criar lead:", (error as Error).message);
       return res.status(400).json({
         message: "Não foi possível criar o lead",
-        error: error.message,
+        error: (error as Error).message,
       });
     }
   },
 
-  async listar(req: Request, res: Response) {
+  async listar(_req: Request, res: Response) {
     try {
       const leads = await Leads.findAll({
         attributes: [
-          "LD_NAME",
-          "LDS_EMAIL",
-          "LDS_PHONE",
-          "LDS_SOURCE",
-          "LDS_STATUS",
+          "name",
+          "email",
+          "phone",
+          "source",
+          "status",
         ],
       });
 
       return res.json(leads);
-    } catch (error: any) {
-      console.error("ERRO NO BANCO:", error);
-      return res.status(500).json({ error: error.message });
+    } catch (error) {
+      console.error("ERRO NO BANCO:", (error as Error).message);
+      return res.status(500).json({ error: (error as Error).message });
     }
   },
 
@@ -57,10 +56,13 @@ export const LeadsController = {
       }
 
       return res.json(leadId);
-    } catch (error: any) {
+    } catch (error) {
       return res
         .status(500)
-        .json({ error: "ID fornecido é inválido ou erro no servidor" });
+        .json({
+          message: "ID fornecido é inválido ou erro no servidor",
+          error: (error as Error).message,
+        });
     }
   },
 
@@ -68,13 +70,13 @@ export const LeadsController = {
     try {
       const { id } = req.params;
       const {
-        LD_NAME,
-        LDS_EMAIL,
-        LDS_PHONE,
-        LDS_SOURCE,
-        LDS_STATUS,
-        LDS_MAGIC_TOKEN,
-        LDS_MAGIC_EXPIRES_AT,
+        name,
+        email,
+        phone,
+        source,
+        status,
+        magic_token,
+        magic_expires_at,
       } = req.body;
 
       const leadId = await Leads.findByPk(id);
@@ -86,22 +88,21 @@ export const LeadsController = {
       }
 
       await leadId.update({
-        LD_NAME: LD_NAME || leadId.LD_NAME,
-        LDS_EMAIL: LDS_EMAIL || leadId.LDS_EMAIL,
-        LDS_PHONE: LDS_PHONE || leadId.LDS_PHONE,
-        LDS_SOURCE: LDS_SOURCE || leadId.LDS_SOURCE,
-        LDS_STATUS: LDS_STATUS || leadId.LDS_STATUS,
-        LDS_MAGIC_TOKEN: LDS_MAGIC_TOKEN || leadId.LDS_MAGIC_TOKEN,
-        LDS_MAGIC_EXPIRES_AT:
-          LDS_MAGIC_EXPIRES_AT || leadId.LDS_MAGIC_EXPIRES_AT,
+        name: name || leadId.name,
+        email: email || leadId.email,
+        phone: phone || leadId.phone,
+        source: source || leadId.source,
+        status: status || leadId.status,
+        magic_token: magic_token || leadId.magic_token,
+        magic_expires_at: magic_expires_at || leadId.magic_expires_at,
       });
 
       return res.status(200).json({
         leadId,
         mensagem: "Lead atualizado com sucesso",
       });
-    } catch (error: any) {
-      if (error.name === "SequelizeUniqueConstraintError") {
+    } catch (error) {
+      if ((error as Error).name === "SequelizeUniqueConstraintError") {
         return res
           .status(409)
           .json({ error: "O novo e-mail já está em uso por outro lead." });
@@ -122,8 +123,11 @@ export const LeadsController = {
       await leadId.destroy();
 
       return res.json({ mensagem: "Lead removido com sucesso" });
-    } catch (error: any) {
-      return res.status(500).json({ error: "Erro ao deletar o lead" });
+    } catch (error) {
+      return res.status(500).json({
+        mensagem: "Erro ao deletar o lead",
+        error: (error as Error).message,
+      });
     }
   },
 };
