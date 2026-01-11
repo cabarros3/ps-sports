@@ -27,7 +27,7 @@ CREATE TABLE phones (
 );
 
 CREATE TABLE schools (
-  id INT NOT NULL AUTO_INCREMENT,
+  id CHAR(36) NOT NULL,
   name VARCHAR(100) NOT NULL,
   address VARCHAR(100),
   phone VARCHAR(20),
@@ -35,7 +35,7 @@ CREATE TABLE schools (
 );
 
 CREATE TABLE players (
-  id CHAR(36) NOT NULL,
+  id INT NOT NULL AUTO_INCREMENT,
   weigth DECIMAL(5,2),
   heigth DECIMAL(5,2),
   primary_position VARCHAR(45),
@@ -90,7 +90,7 @@ CREATE TABLE guardians (
 );
 
 CREATE TABLE categories (
-  id INT NOT NULL AUTO_INCREMENT,
+  id CHAR(36) NOT NULL,
   name VARCHAR(100) NOT NULL,
   min_age INT NOT NULL,
   max_age INT NOT NULL,
