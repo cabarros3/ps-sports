@@ -1,144 +1,131 @@
 import type { Request, Response } from "express";
-import { Users } from "../models/index.ts";
-//bcrypt - hashing
+import { Leads } from "../models/Leads.ts";
 
-export const UsersController = {
-  async listar(_req: Request, res: Response) {
+export const LeadsController = {
+  async criar(req: Request, res: Response) {
     try {
-      const users = await Users.findAll({
-        attributes: { exclude: ["USR_PASSWORD"] }, // para não listar a senha
+      const { name, email, phone, source, status } = req.body;
+
+      const lead = await Leads.create({
+        name,
+        email,
+        phone,
+        source,
+        status: status || "Novo",
+        entry_date: new Date(),
+        magic_token: "", // verificar depois como fica
+        magic_expires_at: new Date(),
       });
 
-      return res.json(users);
+      return res.status(201).json(lead);
     } catch (error) {
-      return res.status(500).json({ error: (error as Error).message });
+      console.error("Erro ao criar lead:", (error as Error).message);
+      return res.status(400).json({
+        message: "Não foi possível criar o lead",
+        error: (error as Error).message,
+      });
     }
   },
 
-  async criar(req: Request, res: Response) {
+  async listar(_req: Request, res: Response) {
     try {
-      const {
-        name,
-        birthDate,
-        rg, // opcional
-        cpf,
-        email,
-        password,
-        status,
-      } = req.body;
-
-      // para verificar se o email já foi cadastrado
-      const userExists = await Users.findOne({ where: { email } });
-
-      if (userExists) {
-        return res.status(400).json({ message: "E-mail já cadastrado" });
-      }
-
-      // para criar a senha com hash - melhorar mais tarde
-      //const saltRounds = 10;
-      const hashedPassword = password;
-
-      const user = await Users.create({
-        name,
-        birth_date: birthDate,
-        rg,
-        cpf,
-        email,
-        password: hashedPassword,
-        status: status || "Ativo",
+      const leads = await Leads.findAll({
+        attributes: [
+          "name",
+          "email",
+          "phone",
+          "source",
+          "status",
+        ],
       });
 
-      // para remover a senha do response
-      const userResponse = user.toJSON();
-      delete userResponse.password;
-
-      return res.status(201).json(userResponse);
+      return res.json(leads);
     } catch (error) {
-      // console.error("Erro ao criar usuário:", error);
-      return res.status(400).json({
-        message: "Erro ao criar usuário",
-        error: (error as Error).message,
-      });
+      console.error("ERRO NO BANCO:", (error as Error).message);
+      return res.status(500).json({ error: (error as Error).message });
     }
   },
 
   async buscarPorId(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const user = await Users.findByPk(id, {
-        attributes: { exclude: ["USR_PASSWORD"] },
-      });
+      const leadId = await Leads.findByPk(id);
 
-      if (!user) {
-        return res.status(404).json({ error: "Usuário não encontrado" });
+      if (!leadId) {
+        return res.status(404).json({ error: "Lead não encontrado" });
       }
 
-      return res.json(user);
+      return res.json(leadId);
     } catch (error) {
-      return res.status(500).json({
-        message: "ID inválido ou erro no servidor",
-        error: (error as Error).message,
-      });
+      return res
+        .status(500)
+        .json({
+          message: "ID fornecido é inválido ou erro no servidor",
+          error: (error as Error).message,
+        });
     }
   },
 
   async atualizar(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { _password, _cpf, ...restanteDosDados } = req.body;
+      const {
+        name,
+        email,
+        phone,
+        source,
+        status,
+        magic_token,
+        magic_expires_at,
+      } = req.body;
 
-      const user = await Users.findByPk(id);
-      if (!user) {
-        return res.status(404).json({ error: "Usuário não encontrado" });
+      const leadId = await Leads.findByPk(id);
+
+      if (!leadId) {
+        return res
+          .status(404)
+          .json({ error: "Lead não encontrado para atualização" });
       }
 
-      // MELHORIA: Criamos um objeto de dados para o update
-      const dadosParaAtualizar = { ...restanteDosDados };
+      await leadId.update({
+        name: name || leadId.name,
+        email: email || leadId.email,
+        phone: phone || leadId.phone,
+        source: source || leadId.source,
+        status: status || leadId.status,
+        magic_token: magic_token || leadId.magic_token,
+        magic_expires_at: magic_expires_at || leadId.magic_expires_at,
+      });
 
-      /*if (password) {
-        //const saltRounds = 10;
-        // Colocamos a senha dentro do objeto que será passado ao .update()
-        dadosParaAtualizar.USR_PASSWORD = await bcrypt.hash(
-          password,
-          saltRounds,
-        )
-      }*/
-
-      await user.update(dadosParaAtualizar);
-
-      const userAtualizado = user.toJSON();
-      delete userAtualizado.password;
-
-      return res
-        .status(200)
-        .json({
-          message: "Usuário atualizado com sucesso",
-          user: userAtualizado,
-        });
+      return res.status(200).json({
+        leadId,
+        mensagem: "Lead atualizado com sucesso",
+      });
     } catch (error) {
-      return res
-        .status(500)
-        .json({
-          message: "Erro interno ao atualizar usuário",
-          error: (error as Error).message,
-        });
+      if ((error as Error).name === "SequelizeUniqueConstraintError") {
+        return res
+          .status(409)
+          .json({ error: "O novo e-mail já está em uso por outro lead." });
+      }
+      return res.status(500).json({ error: "Erro ao atualizar o lead" });
     }
   },
 
   async deletar(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const userId = await Users.findByPk(id);
+      const leadId = await Leads.findByPk(id);
 
-      if (!userId) {
-        return res.status(404).json({ error: "Usuário não encontrado" });
+      if (!leadId) {
+        return res.status(404).json({ error: "Lead não encontrado" });
       }
 
-      await userId.destroy();
-      return res.json({ mensagem: "Usuário removido com sucesso" });
+      await leadId.destroy();
+
+      return res.json({ mensagem: "Lead removido com sucesso" });
     } catch (error) {
       return res.status(500).json({
-        message: "Erro ao deletar usuário",
+        mensagem: "Erro ao deletar o lead",
         error: (error as Error).message,
       });
     }
