@@ -20,7 +20,7 @@ CREATE TABLE users (
 CREATE TABLE phones (
   id INT NOT NULL AUTO_INCREMENT,
   number VARCHAR(20) NOT NULL,
-  user_id INT NOT NULL,
+  user_id CHAR(36) NOT NULL,
   PRIMARY KEY (id),
   UNIQUE (number),
   FOREIGN KEY (user_id) REFERENCES users(id)
@@ -44,7 +44,7 @@ CREATE TABLE players (
   entry_date DATETIME NOT NULL,
   sport_status VARCHAR(45),
   notes TEXT,
-  user_id INT NOT NULL,
+  user_id CHAR(36) NOT NULL,
   school_id INT NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id),
@@ -60,7 +60,7 @@ CREATE TABLE addresses (
   city VARCHAR(50) NOT NULL,
   state VARCHAR(2) NOT NULL,
   zipcode VARCHAR(10) NOT NULL,
-  user_id INT NOT NULL,
+  user_id CHAR(36) NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -84,7 +84,7 @@ CREATE TABLE users_roles (
 CREATE TABLE guardians (
   id INT NOT NULL AUTO_INCREMENT,
   kinship VARCHAR(45) NOT NULL,
-  user_id INT NOT NULL,
+  user_id CHAR(36) NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users (id)
 );
@@ -103,7 +103,7 @@ CREATE TABLE trainers (
   specialty VARCHAR(45),
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
-  user_id INT NOT NULL,
+  user_id CHAR(36) NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -157,7 +157,7 @@ CREATE TABLE leads (
 CREATE TABLE staff (
   id INT NOT NULL,
   hire_date DATE NOT NULL,
-  user_id INT NOT NULL,
+  user_id CHAR(36) NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );

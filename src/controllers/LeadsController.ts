@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { Leads } from "../models/Leads.ts";
+import { Leads } from "../models/index.ts";
 
 export const LeadsController = {
   async criar(req: Request, res: Response) {
