@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import { Guardian } from '../models/Guardian';
+import { Guardian } from '../models/Guardian.ts';
+
 
 export class GuardianController {
   async create(req: Request, res: Response) {

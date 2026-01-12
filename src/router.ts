@@ -14,6 +14,7 @@ import routesStaff from "./routes/staff.routes.ts";
 import routesTrainers from "./routes/trainers.routes.ts";
 import routesUsersRoles from "./routes/users-roles.routes.ts";
 import routesUsers from "./routes/users.routes.ts";
+import routesGuardians from "./routes/guardians.routes.ts"; // Adicionado para a tarefa #31
 
 const router = Router();
 
@@ -46,6 +47,7 @@ router.use("/players", routesPlayers);
 router.use("/phones", routesPhones);
 router.use("/leads", routesLeads);
 router.use("/categories", routesCategories);
+router.use("/guardians", routesGuardians); // Adicionado para a tarefa #31
 
 // Rota de Documentação (Swagger UI)
 router.use(

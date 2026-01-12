@@ -1,6 +1,5 @@
 import { Model, DataTypes } from 'sequelize';
-import { sequelize } from '../models/index.ts'; // Verifique se o caminho da conexão está correto conforme seu projeto
-
+import { sequelize } from './index.ts';
 export class Guardian extends Model {
   public gua_id!: number;
   public gua_usr_id!: number;

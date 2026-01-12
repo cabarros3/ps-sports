@@ -15,4 +15,4 @@ async function syncDatabase() {
 
 syncDatabase();
 
-export { Leads, Users };
+export { Leads, Users, sequelize };
