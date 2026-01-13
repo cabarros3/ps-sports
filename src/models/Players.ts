@@ -12,7 +12,7 @@ interface IPlayers {
   sport_status: string;
   notes: string;
   user_id: string;
-  school_id: number;
+  school_id: string;
 }
 
 interface PlayersCreationAttributes extends Optional<IPlayers, "id"> {}
@@ -29,7 +29,7 @@ export class Players extends Model<IPlayers, PlayersCreationAttributes>
   public sport_status!: string;
   public notes!: string;
   public user_id!: string;
-  public school_id!: number;
+  public school_id!: string;
 }
 
 export default function PlayersModel(sequelize: Sequelize) {
@@ -39,6 +39,7 @@ export default function PlayersModel(sequelize: Sequelize) {
         type: DataTypes.INTEGER,
         primaryKey: true,
         allowNull: false,
+        autoIncrement: true,
       },
       weight: {
         type: DataTypes.DECIMAL(5, 2),
@@ -77,7 +78,7 @@ export default function PlayersModel(sequelize: Sequelize) {
         allowNull: false,
       },
       school_id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUIDV4,
         allowNull: false,
       },
     },
@@ -85,6 +86,7 @@ export default function PlayersModel(sequelize: Sequelize) {
       sequelize,
       tableName: "players",
       underscored: false,
+      timestamps: false,
     },
   );
 

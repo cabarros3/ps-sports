@@ -5,6 +5,7 @@ interface IClasses {
   id: number;
   name: string;
   weekdays: string;
+  schedule: Date;
   status:
     | "Novo"
     | "Em contato"
@@ -23,6 +24,7 @@ export class Classes extends Model<IClasses, ClassesCreationAttributes>
   public id!: number;
   public name!: string;
   public weekdays!: string;
+  public schedule!: Date;
   public status!:
     | "Novo"
     | "Em contato"
@@ -41,6 +43,7 @@ export default function ClassesModel(sequelize: Sequelize) {
         type: DataTypes.INTEGER,
         primaryKey: true,
         allowNull: false,
+        autoIncrement: true,
       },
       name: {
         type: DataTypes.STRING(100),
@@ -48,6 +51,10 @@ export default function ClassesModel(sequelize: Sequelize) {
       },
       weekdays: {
         type: DataTypes.STRING(100),
+        allowNull: false,
+      },
+      schedule: {
+        type: DataTypes.DATE,
         allowNull: false,
       },
       status: {
@@ -77,6 +84,7 @@ export default function ClassesModel(sequelize: Sequelize) {
       sequelize,
       tableName: "classes",
       underscored: false,
+      timestamps: false,
     },
   );
 

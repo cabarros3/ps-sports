@@ -36,8 +36,8 @@ CREATE TABLE schools (
 
 CREATE TABLE players (
   id INT NOT NULL AUTO_INCREMENT,
-  weigth DECIMAL(5,2),
-  heigth DECIMAL(5,2),
+  weight DECIMAL(5,2),
+  height DECIMAL(5,2),
   primary_position VARCHAR(45),
   second_position VARCHAR(45),
   dominant_foot VARCHAR(45),
@@ -45,7 +45,7 @@ CREATE TABLE players (
   sport_status VARCHAR(45),
   notes TEXT,
   user_id CHAR(36) NOT NULL,
-  school_id INT NOT NULL,
+  school_id CHAR(36) NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (school_id) REFERENCES schools(id)
@@ -121,7 +121,7 @@ CREATE TABLE classes (
   schedule DATETIME NOT NULL,
   status VARCHAR(45) NOT NULL,
   modality_id INT NOT NULL,
-  category_id INT NOT NULL,
+  category_id CHAR(36) NOT NULL,
   trainer_id INT NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (modality_id) REFERENCES modalities (id),

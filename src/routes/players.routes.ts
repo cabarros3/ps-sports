@@ -1,214 +1,192 @@
 import express from "express";
+import { PlayersController } from "../controllers/PlayersController.ts";
+
 const routerPlayers = express.Router();
 
 /**
  * @swagger
  * components:
  *   schemas:
- *     Jogador:
+ *     Player:
  *       type: object
  *       properties:
  *         id:
  *           type: integer
  *           description: ID único do jogador
- *         nome:
+ *         weight:
+ *           type: number
+ *           format: decimal
+ *           description: Peso do jogador em kg
+ *         height:
+ *           type: number
+ *           format: decimal
+ *           description: Altura do jogador em metros
+ *         primary_position:
  *           type: string
- *           description: Nome do jogador ou nickname
- *         email:
+ *           maxLength: 45
+ *           description: Posição primária do jogador em campo
+ *         second_position:
  *           type: string
- *           format: email
- *           description: Email do jogador
- *         nickname:
+ *           maxLength: 45
+ *           description: Posição secundária do jogador
+ *         dominant_foot:
  *           type: string
- *           description: Apelido/username único do jogador
- *         avatar:
+ *           maxLength: 45
+ *           description: Pé dominante (direito/esquerdo)
+ *         entry_date:
  *           type: string
- *           format: uri
- *           description: URL do avatar do jogador
- *         nivel:
- *           type: integer
- *           description: Nível atual do jogador
- *           minimum: 1
- *         experiencia:
- *           type: integer
- *           description: Pontos de experiência acumulados
- *           minimum: 0
- *         pontuacao_total:
- *           type: integer
- *           description: Pontuação total acumulada
- *           minimum: 0
- *         moedas:
- *           type: integer
- *           description: Moedas virtuais do jogador
- *           minimum: 0
- *         vitorias:
- *           type: integer
- *           description: Total de vitórias
- *           minimum: 0
- *         derrotas:
- *           type: integer
- *           description: Total de derrotas
- *           minimum: 0
- *         empates:
- *           type: integer
- *           description: Total de empates
- *           minimum: 0
- *         rank:
+ *           format: date
+ *           description: Data de entrada no sistema
+ *         sport_status:
  *           type: string
- *           enum: [bronze, prata, ouro, platina, diamante, mestre, grao_mestre, lendario]
- *           description: Ranking do jogador
- *         status:
+ *           maxLength: 45
+ *           description: Status esportivo atual (ativo/inativo/lesionado)
+ *         notes:
  *           type: string
- *           enum: [online, offline, em_jogo, ausente]
- *           description: Status atual do jogador
- *         ultimo_acesso:
+ *           description: Observações adicionais sobre o jogador
+ *         user_id:
  *           type: string
- *           format: date-time
- *           description: Data e hora do último acesso
- *         data_cadastro:
+ *           format: uuid
+ *           description: ID do usuário associado
+ *         school_id:
  *           type: string
- *           format: date-time
- *           description: Data de cadastro do jogador
- *         ativo:
- *           type: boolean
- *           description: Indica se a conta está ativa
- *         banido:
- *           type: boolean
- *           description: Indica se o jogador foi banido
- *         created_at:
- *           type: string
- *           format: date-time
- *           description: Data de criação do registro
- *         updated_at:
- *           type: string
- *           format: date-time
- *           description: Data da última atualização
+ *           format: uuid
+ *           description: ID da escola associada
  *       example:
  *         id: 1
- *         nome: "Carlos Silva"
- *         email: "carlos.silva@example.com"
- *         nickname: "DragonSlayer99"
- *         avatar: "https://example.com/avatars/dragon99.png"
- *         nivel: 42
- *         experiencia: 125000
- *         pontuacao_total: 89500
- *         moedas: 5420
- *         vitorias: 156
- *         derrotas: 89
- *         empates: 12
- *         rank: "platina"
- *         status: "online"
- *         ultimo_acesso: "2024-01-20T15:30:00Z"
- *         data_cadastro: "2023-06-15T10:00:00Z"
- *         ativo: true
- *         banido: false
- *         created_at: "2023-06-15T10:00:00Z"
- *         updated_at: "2024-01-20T15:30:00Z"
+ *         weight: 75.50
+ *         height: 1.82
+ *         primary_position: "Atacante"
+ *         second_position: "Meio-campo"
+ *         dominant_foot: "Direito"
+ *         entry_date: "2026-01-10"
+ *         sport_status: "Ativo"
+ *         notes: "Jogador com boa visão de jogo"
+ *         user_id: "550e8400-e29b-41d4-a716-446655440000"
+ *         school_id: "660e8400-e29b-41d4-a716-446655440001"
  *
- *     JogadorInput:
+ *     PlayerInput:
  *       type: object
  *       required:
- *         - nome
- *         - email
- *         - nickname
+ *         - weight
+ *         - height
+ *         - second_position
+ *         - dominant_foot
+ *         - entry_date
+ *         - sport_status
+ *         - user_id
+ *         - school_id
  *       properties:
- *         nome:
+ *         weight:
+ *           type: number
+ *           format: decimal
+ *           description: Peso do jogador em kg
+ *           minimum: 0
+ *         height:
+ *           type: number
+ *           format: decimal
+ *           description: Altura do jogador em metros
+ *           minimum: 0
+ *         primary_position:
  *           type: string
- *           description: Nome do jogador
- *           minLength: 3
- *           maxLength: 100
- *         email:
+ *           maxLength: 45
+ *           description: Posição primária (opcional)
+ *         second_position:
  *           type: string
- *           format: email
- *           description: Email único do jogador
- *         nickname:
+ *           maxLength: 45
+ *           description: Posição secundária
+ *         dominant_foot:
  *           type: string
- *           description: Nickname único do jogador
- *           minLength: 3
- *           maxLength: 30
- *           pattern: '^[a-zA-Z0-9_-]+$'
- *         senha:
+ *           maxLength: 45
+ *           enum: [Direito, Esquerdo, Ambidestro]
+ *           description: Pé dominante
+ *         entry_date:
  *           type: string
- *           format: password
- *           description: Senha da conta
- *           minLength: 8
- *         avatar:
+ *           format: date
+ *           description: Data de entrada
+ *         sport_status:
  *           type: string
- *           format: uri
- *           description: URL do avatar
- *         nivel:
- *           type: integer
- *           description: Nível inicial (padrão 1)
- *           default: 1
- *         rank:
+ *           maxLength: 45
+ *           enum: [Ativo, Inativo, Lesionado, Suspenso]
+ *           description: Status esportivo
+ *         notes:
  *           type: string
- *           enum: [bronze, prata, ouro, platina, diamante, mestre, grao_mestre, lendario]
- *           default: bronze
+ *           description: Observações (opcional)
+ *         user_id:
+ *           type: string
+ *           format: uuid
+ *           description: ID do usuário
+ *         school_id:
+ *           type: string
+ *           format: uuid
+ *           description: ID da escola
  *       example:
- *         nome: "Maria Santos"
- *         email: "maria.santos@example.com"
- *         nickname: "PhoenixRising"
- *         senha: "senhaSegura123"
- *         avatar: "https://example.com/avatars/phoenix.png"
+ *         weight: 72.00
+ *         height: 1.78
+ *         primary_position: "Zagueiro"
+ *         second_position: "Lateral"
+ *         dominant_foot: "Esquerdo"
+ *         entry_date: "2026-01-12"
+ *         sport_status: "Ativo"
+ *         notes: "Boa aptidão física"
+ *         user_id: "550e8400-e29b-41d4-a716-446655440000"
+ *         school_id: "660e8400-e29b-41d4-a716-446655440001"
  *
- *     JogadorUpdate:
+ *     PlayerUpdate:
  *       type: object
  *       properties:
- *         nome:
- *           type: string
- *           minLength: 3
- *           maxLength: 100
- *         email:
- *           type: string
- *           format: email
- *         nickname:
- *           type: string
- *           minLength: 3
- *           maxLength: 30
- *           pattern: '^[a-zA-Z0-9_-]+$'
- *         senha:
- *           type: string
- *           format: password
- *           minLength: 8
- *         avatar:
- *           type: string
- *           format: uri
- *         nivel:
- *           type: integer
- *           minimum: 1
- *         experiencia:
- *           type: integer
+ *         weight:
+ *           type: number
+ *           format: decimal
  *           minimum: 0
- *         moedas:
- *           type: integer
+ *         height:
+ *           type: number
+ *           format: decimal
  *           minimum: 0
- *         rank:
+ *         primary_position:
  *           type: string
- *           enum: [bronze, prata, ouro, platina, diamante, mestre, grao_mestre, lendario]
- *         status:
+ *           maxLength: 45
+ *         second_position:
  *           type: string
- *           enum: [online, offline, em_jogo, ausente]
- *         ativo:
- *           type: boolean
- *         banido:
- *           type: boolean
+ *           maxLength: 45
+ *         dominant_foot:
+ *           type: string
+ *           maxLength: 45
+ *           enum: [Direito, Esquerdo, Ambidestro]
+ *         entry_date:
+ *           type: string
+ *           format: date
+ *         sport_status:
+ *           type: string
+ *           maxLength: 45
+ *           enum: [Ativo, Inativo, Lesionado, Suspenso]
+ *         notes:
+ *           type: string
+ *         user_id:
+ *           type: string
+ *           format: uuid
+ *         school_id:
+ *           type: string
+ *           format: uuid
  *       example:
- *         nivel: 43
- *         experiencia: 127500
- *         moedas: 5620
- *         rank: "diamante"
- *         status: "em_jogo"
+ *         weight: 73.50
+ *         height: 1.79
+ *         sport_status: "Lesionado"
+ *         notes: "Recuperando de lesão no joelho"
  *
- *     JogadorError:
+ *     PlayerError:
  *       type: object
  *       properties:
  *         error:
  *           type: string
  *           description: Mensagem de erro
+ *         message:
+ *           type: string
+ *           description: Descrição detalhada do erro
  *       example:
  *         error: "Jogador não encontrado"
  *
- *     JogadorSuccessMessage:
+ *     PlayerSuccessMessage:
  *       type: object
  *       properties:
  *         mensagem:
@@ -217,201 +195,60 @@ const routerPlayers = express.Router();
  *       example:
  *         mensagem: "Jogador removido com sucesso"
  *
- *     JogadorAtualizadoResponse:
+ *     PlayerUpdateResponse:
  *       type: object
  *       properties:
- *         jogador:
- *           $ref: '#/components/schemas/Jogador'
+ *         playerId:
+ *           $ref: '#/components/schemas/Player'
  *         mensagem:
  *           type: string
  *       example:
- *         jogador:
+ *         playerId:
  *           id: 1
- *           nome: "Carlos Silva"
- *           nickname: "DragonSlayer99"
- *           nivel: 43
- *           experiencia: 127500
- *           rank: "diamante"
- *           vitorias: 157
- *           updated_at: "2024-01-21T10:15:00Z"
+ *           weight: 74.00
+ *           height: 1.80
+ *           sport_status: "Ativo"
  *         mensagem: "Jogador atualizado com sucesso"
  *
- *     JogadorEstatisticas:
- *       type: object
- *       properties:
- *         jogador_id:
- *           type: integer
- *         total_partidas:
- *           type: integer
- *         taxa_vitoria:
- *           type: number
- *           format: float
- *           description: Percentual de vitórias
- *         sequencia_vitorias:
- *           type: integer
- *           description: Sequência atual de vitórias
- *         melhor_sequencia:
- *           type: integer
- *           description: Melhor sequência de vitórias
- *         tempo_jogado:
- *           type: integer
- *           description: Tempo total jogado em minutos
- *         conquistas:
- *           type: integer
- *           description: Total de conquistas desbloqueadas
- *       example:
- *         jogador_id: 1
- *         total_partidas: 257
- *         taxa_vitoria: 60.7
- *         sequencia_vitorias: 5
- *         melhor_sequencia: 12
- *         tempo_jogado: 15840
- *         conquistas: 34
- *
  *   tags:
- *     - name: Jogadores
- *       description: Gerenciamento de jogadores e perfis de usuário
+ *     - name: Players
+ *       description: Gerenciamento de jogadores
  */
 
 /**
  * @swagger
- * /jogadores:
+ * /players:
  *   get:
  *     summary: Lista todos os jogadores
- *     description: Retorna uma lista com todos os jogadores cadastrados, com opções de filtro, ordenação e busca
- *     tags: [Jogadores]
- *     parameters:
- *       - in: query
- *         name: rank
- *         schema:
- *           type: string
- *           enum: [bronze, prata, ouro, platina, diamante, mestre, grao_mestre, lendario]
- *         description: Filtrar jogadores por rank
- *         example: platina
- *       - in: query
- *         name: status
- *         schema:
- *           type: string
- *           enum: [online, offline, em_jogo, ausente]
- *         description: Filtrar por status atual
- *         example: online
- *       - in: query
- *         name: nivel_min
- *         schema:
- *           type: integer
- *           minimum: 1
- *         description: Nível mínimo
- *         example: 30
- *       - in: query
- *         name: nivel_max
- *         schema:
- *           type: integer
- *         description: Nível máximo
- *         example: 50
- *       - in: query
- *         name: ativo
- *         schema:
- *           type: boolean
- *         description: Filtrar apenas jogadores ativos
- *         example: true
- *       - in: query
- *         name: banido
- *         schema:
- *           type: boolean
- *         description: Incluir/excluir jogadores banidos
- *         example: false
- *       - in: query
- *         name: busca
- *         schema:
- *           type: string
- *         description: Buscar por nome ou nickname
- *         example: "Dragon"
- *       - in: query
- *         name: ordenar_por
- *         schema:
- *           type: string
- *           enum: [nivel, pontuacao_total, vitorias, data_cadastro, ultimo_acesso]
- *         description: Campo para ordenação
- *         example: pontuacao_total
- *       - in: query
- *         name: ordem
- *         schema:
- *           type: string
- *           enum: [asc, desc]
- *         description: Ordem de classificação
- *         example: desc
- *       - in: query
- *         name: limite
- *         schema:
- *           type: integer
- *           minimum: 1
- *           maximum: 100
- *         description: Número máximo de resultados
- *         example: 20
- *       - in: query
- *         name: pagina
- *         schema:
- *           type: integer
- *           minimum: 1
- *         description: Número da página
- *         example: 1
+ *     description: Retorna uma lista completa com todos os jogadores cadastrados no sistema
+ *     tags: [Players]
  *     responses:
  *       200:
  *         description: Lista de jogadores retornada com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 jogadores:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Jogador'
- *                 total:
- *                   type: integer
- *                   description: Total de jogadores encontrados
- *                 pagina:
- *                   type: integer
- *                   description: Página atual
- *                 totalPaginas:
- *                   type: integer
- *                   description: Total de páginas
- *                 estatisticas:
- *                   type: object
- *                   properties:
- *                     total_online:
- *                       type: integer
- *                     por_rank:
- *                       type: object
- *                       description: Contagem de jogadores por rank
- *                     nivel_medio:
- *                       type: number
- *       401:
- *         description: Não autorizado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/JogadorError'
- *             example:
- *               error: "Token de autenticação inválido"
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Player'
  *       500:
  *         description: Erro interno do servidor
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/JogadorError'
+ *               $ref: '#/components/schemas/PlayerError'
  *             example:
- *               error: "Erro ao listar jogadores"
+ *               error: "Erro ao buscar jogadores"
  */
-routerPlayers.get("/", (req, res) => res.send("Listar jogadores"));
+routerPlayers.get("/", PlayersController.listar);
 
 /**
  * @swagger
- * /jogadores/{id}:
+ * /players/{id}:
  *   get:
  *     summary: Busca um jogador por ID
- *     description: Retorna os dados completos de um jogador específico, incluindo estatísticas
- *     tags: [Jogadores]
+ *     description: Retorna os dados completos de um jogador específico através do seu ID
+ *     tags: [Players]
  *     parameters:
  *       - in: path
  *         name: id
@@ -420,120 +257,78 @@ routerPlayers.get("/", (req, res) => res.send("Listar jogadores"));
  *           type: integer
  *         description: ID numérico do jogador
  *         example: 1
- *       - in: query
- *         name: incluir_estatisticas
- *         schema:
- *           type: boolean
- *         description: Incluir estatísticas detalhadas do jogador
- *         example: true
  *     responses:
  *       200:
  *         description: Jogador encontrado com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 jogador:
- *                   $ref: '#/components/schemas/Jogador'
- *                 estatisticas:
- *                   $ref: '#/components/schemas/JogadorEstatisticas'
+ *               $ref: '#/components/schemas/Player'
  *       404:
  *         description: Jogador não encontrado
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/JogadorError'
+ *               $ref: '#/components/schemas/PlayerError'
  *             example:
- *               error: "Jogador não encontrado"
- *       401:
- *         description: Não autorizado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/JogadorError'
- *             example:
- *               error: "Acesso não autorizado"
- *       400:
- *         description: ID inválido
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/JogadorError'
- *             example:
- *               error: "ID deve ser um número inteiro válido"
+ *               message: "Jogador não encontrado"
  *       500:
- *         description: Erro interno do servidor
+ *         description: ID inválido ou erro no servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PlayerError'
+ *             example:
+ *               message: "ID inválido ou erro no servidor"
+ *               error: "Detalhes do erro"
  */
-routerPlayers.get("/:id", (req, res) => res.send("Buscar jogador"));
+routerPlayers.get("/:id", PlayersController.buscarPorId);
 
 /**
  * @swagger
- * /jogadores:
+ * /players:
  *   post:
  *     summary: Cria um novo jogador
- *     description: Cadastra um novo jogador no sistema com nome, email e nickname únicos
- *     tags: [Jogadores]
+ *     description: Cadastra um novo jogador no sistema com todos os dados necessários
+ *     tags: [Players]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/JogadorInput'
+ *             $ref: '#/components/schemas/PlayerInput'
  *     responses:
  *       201:
  *         description: Jogador criado com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Jogador'
+ *               $ref: '#/components/schemas/Player'
  *       400:
- *         description: Dados inválidos
+ *         description: Dados inválidos ou campos obrigatórios não preenchidos
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/JogadorError'
+ *               $ref: '#/components/schemas/PlayerError'
  *             examples:
- *               campoObrigatorio:
+ *               camposObrigatorios:
  *                 value:
- *                   error: "Nome, email e nickname são campos obrigatórios"
- *               emailInvalido:
+ *                   message: "Erro ao criar o jogador"
+ *                   error: "Campos obrigatórios não preenchidos"
+ *               dadosInvalidos:
  *                 value:
- *                   error: "Formato de email inválido"
- *               nicknameInvalido:
- *                 value:
- *                   error: "Nickname deve conter apenas letras, números, hífens e underscores"
- *               nicknameCurto:
- *                 value:
- *                   error: "Nickname deve ter no mínimo 3 caracteres"
- *               senhaFraca:
- *                 value:
- *                   error: "A senha deve ter no mínimo 8 caracteres"
- *       409:
- *         description: Conflito - email ou nickname já cadastrado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/JogadorError'
- *             examples:
- *               emailDuplicado:
- *                 value:
- *                   error: "Este email já está cadastrado"
- *               nicknameDuplicado:
- *                 value:
- *                   error: "Este nickname já está em uso"
- *       500:
- *         description: Erro interno do servidor
+ *                   message: "Erro ao criar o jogador"
+ *                   error: "Peso e altura devem ser valores numéricos positivos"
  */
-routerPlayers.post("/", (req, res) => res.send("Criar jogador"));
+routerPlayers.post("/", PlayersController.criar);
 
 /**
  * @swagger
- * /jogadores/{id}:
+ * /players/{id}:
  *   put:
  *     summary: Atualiza um jogador existente
- *     description: Atualiza os dados de um jogador, incluindo progressão, estatísticas e status
- *     tags: [Jogadores]
+ *     description: Atualiza parcialmente ou totalmente os dados de um jogador. Campos não enviados mantêm seus valores atuais
+ *     tags: [Players]
  *     parameters:
  *       - in: path
  *         name: id
@@ -547,134 +342,76 @@ routerPlayers.post("/", (req, res) => res.send("Criar jogador"));
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/JogadorUpdate'
+ *             $ref: '#/components/schemas/PlayerUpdate'
  *     responses:
  *       200:
  *         description: Jogador atualizado com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/JogadorAtualizadoResponse'
+ *               $ref: '#/components/schemas/PlayerUpdateResponse'
  *       404:
  *         description: Jogador não encontrado
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/JogadorError'
+ *               $ref: '#/components/schemas/PlayerError'
  *             example:
- *               error: "Jogador não encontrado"
- *       400:
- *         description: Dados inválidos
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/JogadorError'
- *             examples:
- *               emailInvalido:
- *                 value:
- *                   error: "Formato de email inválido"
- *               nicknameInvalido:
- *                 value:
- *                   error: "Formato de nickname inválido"
- *               nivelInvalido:
- *                 value:
- *                   error: "Nível deve ser maior ou igual a 1"
- *               experienciaInvalida:
- *                 value:
- *                   error: "Experiência não pode ser negativa"
- *       401:
- *         description: Não autorizado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/JogadorError'
- *             example:
- *               error: "Você não tem permissão para atualizar este jogador"
- *       409:
- *         description: Conflito - email ou nickname já usado por outro jogador
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/JogadorError'
- *             examples:
- *               emailConflito:
- *                 value:
- *                   error: "Este email já está sendo usado por outro jogador"
- *               nicknameConflito:
- *                 value:
- *                   error: "Este nickname já está em uso por outro jogador"
+ *               error: "Jogador não encontrado para atualização"
  *       500:
  *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PlayerError'
+ *             example:
+ *               message: "Erro ao atualizar o jogador"
+ *               error: "Detalhes do erro"
  */
-routerPlayers.put("/:id", (req, res) => res.send("Atualizar jogador"));
+routerPlayers.put("/:id", PlayersController.atualizar);
 
 /**
  * @swagger
- * /jogadores/{id}:
+ * /players/{id}:
  *   delete:
  *     summary: Remove um jogador
- *     description: Realiza a exclusão de um jogador através do seu ID. Jogadores com histórico extenso podem ser desativados ao invés de removidos
- *     tags: [Jogadores]
+ *     description: Realiza a exclusão permanente de um jogador do sistema através do seu ID
+ *     tags: [Players]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID numérico do jogador
+ *         description: ID numérico do jogador a ser removido
  *         example: 1
- *       - in: query
- *         name: remover_dados
- *         schema:
- *           type: boolean
- *         description: Se true, remove todos os dados. Se false, apenas desativa a conta
- *         example: false
  *     responses:
  *       200:
  *         description: Jogador removido com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/JogadorSuccessMessage'
- *             examples:
- *               removido:
- *                 value:
- *                   mensagem: "Jogador removido com sucesso"
- *               desativado:
- *                 value:
- *                   mensagem: "Conta do jogador desativada com sucesso"
+ *               $ref: '#/components/schemas/PlayerSuccessMessage'
+ *             example:
+ *               mensagem: "Jogador removido com sucesso"
  *       404:
  *         description: Jogador não encontrado
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/JogadorError'
+ *               $ref: '#/components/schemas/PlayerError'
  *             example:
  *               error: "Jogador não encontrado"
- *       401:
- *         description: Não autorizado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/JogadorError'
- *             example:
- *               error: "Você não tem permissão para remover este jogador"
- *       409:
- *         description: Conflito - jogador possui dados que devem ser preservados
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/JogadorError'
- *             examples:
- *               historicoExtensivo:
- *                 value:
- *                   error: "Jogador possui histórico extenso. Considere desativar ao invés de remover"
- *               partidasAtivas:
- *                 value:
- *                   error: "Não é possível remover jogador com partidas em andamento"
  *       500:
  *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PlayerError'
+ *             example:
+ *               message: "Erro ao deletar jogador"
+ *               error: "Detalhes do erro"
  */
-routerPlayers.delete("/:id", (req, res) => res.send("Deletar jogador"));
+routerPlayers.delete("/:id", PlayersController.deletar);
 
 export default routerPlayers;

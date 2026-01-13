@@ -35,6 +35,7 @@ export default function AddressesModel(sequelize: Sequelize) {
         type: DataTypes.INTEGER,
         primaryKey: true,
         allowNull: false,
+        autoIncrement: true,
       },
       street: {
         type: DataTypes.STRING(255),
@@ -73,6 +74,7 @@ export default function AddressesModel(sequelize: Sequelize) {
       sequelize,
       tableName: "addresses",
       underscored: false,
+      timestamps: false,
     },
   );
 

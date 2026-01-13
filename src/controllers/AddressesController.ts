@@ -28,7 +28,7 @@ export const AddressesController = {
 
       return res.status(201).json(address);
     } catch (error) {
-      console.error("Erro ao criar lead:", (error as Error).message);
+      console.error("Erro ao criar endereço:", (error as Error).message);
       return res.status(400).json({
         message: "Não foi possível criar o lead",
         error: (error as Error).message,
