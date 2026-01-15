@@ -11,9 +11,6 @@ const Phones = PhonesModel(sequelize);
 const Staffs = StaffsModel(sequelize);
 const Schools = SchoolsModel(sequelize);
 
-Phones.associate({ Users });
-Staffs.associate({ Users });
-
 async function syncDatabase() {
   try {
     await sequelize.sync();
@@ -24,4 +21,4 @@ async function syncDatabase() {
 
 syncDatabase();
 
-export { Leads, Users, Phones, Staffs, Schools };
+export { Leads, Phones, Schools, Staffs, Users };
