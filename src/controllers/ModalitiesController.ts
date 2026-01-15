@@ -1,9 +1,7 @@
-
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import { Modalities } from "../models/Modalities.ts";
 
 class modalitiesControllers {
-
   async criar(req: Request, res: Response) {
     try {
       const { name } = req.body;
@@ -19,7 +17,7 @@ class modalitiesControllers {
     }
   }
 
-  async listar(req: Request, res: Response) {
+  async listar(_req: Request, res: Response) {
     try {
       const modalities = await Modalities.findAll();
       return res.json(modalities);

@@ -6,14 +6,16 @@ import ClassesModel from "./Classes.ts";
 import PlayersModel from "./Players.ts";
 import TrainersModel from "./Trainers.ts";
 import UsersRolesModel from "./Users_Roles.ts";
-
 import CategoriesModel from "./Categories.ts";
 import ModalitiesModel from "./Modalities.ts";
 import AttendancesModel from "./Attendances.ts";
+import PhonesModel from "./Phones.ts";
+import StaffsModel from "./Staffs.ts";
+import SchoolsModel from "./Schools.ts";
 
 const Attendances = AttendancesModel(sequelize);
 const Categories = CategoriesModel(sequelize);
-const Modalities = ModalitiesModel (sequelize);
+const Modalities = ModalitiesModel(sequelize);
 const Users = UsersModel(sequelize);
 const Leads = LeadsModel(sequelize);
 const Addresses = AddressesModel(sequelize);
@@ -49,4 +51,19 @@ async function syncDatabase() {
 
 syncDatabase();
 
-export { Leads, Users , Attendances, Categories, Modalities, UsersRoles, Trainers, Addresses, Classes, Players, sequelize };
+export {
+  Addresses,
+  Attendances,
+  Categories,
+  Classes,
+  Leads,
+  Modalities,
+  Phones,
+  Players,
+  Schools,
+  sequelize,
+  Staffs,
+  Trainers,
+  Users,
+  UsersRoles,
+};

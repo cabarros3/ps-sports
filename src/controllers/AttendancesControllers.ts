@@ -1,9 +1,8 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import { Attendances } from "../models/Attendances.ts";
 
 class attendancesControllers {
-
-  // 🔹 Criar 
+  // 🔹 Criar
 
   async criar(req: Request, res: Response) {
     try {
