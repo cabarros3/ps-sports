@@ -28,7 +28,7 @@ git clone https://github.com/cabarros3/ps-sports.git
 docker --version
 ```
 
-3. Abra o terminal no diretório do projeto (dentro da pasta api-alunos) e rode o seguinte comando:
+3. Abra o terminal no diretório do projeto (dentro da pasta ps-sports) e rode o seguinte comando:
 
 ```bash
 docker compose up -d
