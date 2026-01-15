@@ -1,13 +1,11 @@
 import express from "express";
+import { UsersRolesController } from "../controllers/Users_RolesController.ts";
+
 const routerUsersRoles = express.Router();
 
-// falta chamar os controllers?
-
-routerUsersRoles.get(
-  "/",
-  (req, res) => res.send("Listar vínculos usuário/role"),
-);
-routerUsersRoles.post("/", (req, res) => res.send("Adicionar role ao usuário"));
-routerUsersRoles.delete("/", (req, res) => res.send("Remover role do usuário"));
+routerUsersRoles.get("/", UsersRolesController.listar);
+routerUsersRoles.get("/:id", UsersRolesController.buscarPorId);
+routerUsersRoles.post("/", UsersRolesController.criar);
+routerUsersRoles.delete("/:id", UsersRolesController.deletar);
 
 export default routerUsersRoles;

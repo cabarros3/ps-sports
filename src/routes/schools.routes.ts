@@ -1,13 +1,14 @@
 import express from "express";
+import { SchoolsController } from "../controllers/SchoolsController.ts";
 
 const routerSchools = express.Router();
 
-// falta chamar os controllers?
 
-routerSchools.get("/", (req, res) => res.send("Listar escolas"));
-routerSchools.get("/:id", (req, res) => res.send("Buscar escola"));
-routerSchools.post("/", (req, res) => res.send("Criar escola"));
-routerSchools.put("/:id", (req, res) => res.send("Atualizar escola"));
-routerSchools.delete("/:id", (req, res) => res.send("Deletar escola"));
+routerSchools.post("/", SchoolsController.criar);
+routerSchools.get("/", SchoolsController.listar);
+routerSchools.get("/:id", SchoolsController.buscarPorId);
+routerSchools.put("/:id", SchoolsController.atualizar);
+routerSchools.delete("/:id", SchoolsController.deletar);
+
 
 export default routerSchools;
