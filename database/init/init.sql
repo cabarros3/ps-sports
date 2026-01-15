@@ -20,11 +20,7 @@ CREATE TABLE users (
 CREATE TABLE phones (
   id INT NOT NULL AUTO_INCREMENT,
   number VARCHAR(20) NOT NULL,
-<<<<<<< HEAD
-  user_id INT NOT NULL,
-=======
   user_id CHAR(36) NOT NULL,
->>>>>>> attendances_modalities_categories
   PRIMARY KEY (id),
   UNIQUE (number),
   FOREIGN KEY (user_id) REFERENCES users(id)
@@ -40,16 +36,16 @@ CREATE TABLE schools (
 
 CREATE TABLE players (
   id INT NOT NULL AUTO_INCREMENT,
-  weigth DECIMAL(5,2),
-  heigth DECIMAL(5,2),
+  weight DECIMAL(5,2),
+  height DECIMAL(5,2),
   primary_position VARCHAR(45),
   second_position VARCHAR(45),
   dominant_foot VARCHAR(45),
   entry_date DATETIME NOT NULL,
   sport_status VARCHAR(45),
   notes TEXT,
-  user_id INT NOT NULL,
-  school_id INT NOT NULL,
+  user_id CHAR(36) NOT NULL,
+  school_id CHAR(36) NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (school_id) REFERENCES schools(id)
@@ -64,7 +60,7 @@ CREATE TABLE addresses (
   city VARCHAR(50) NOT NULL,
   state VARCHAR(2) NOT NULL,
   zipcode VARCHAR(10) NOT NULL,
-  user_id INT NOT NULL,
+  user_id CHAR(36) NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -88,7 +84,7 @@ CREATE TABLE users_roles (
 CREATE TABLE guardians (
   id INT NOT NULL AUTO_INCREMENT,
   kinship VARCHAR(45) NOT NULL,
-  user_id INT NOT NULL,
+  user_id CHAR(36) NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users (id)
 );
@@ -107,7 +103,7 @@ CREATE TABLE trainers (
   specialty VARCHAR(45),
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
-  user_id INT NOT NULL,
+  user_id CHAR(36) NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -125,7 +121,7 @@ CREATE TABLE classes (
   schedule DATETIME NOT NULL,
   status VARCHAR(45) NOT NULL,
   modality_id INT NOT NULL,
-  category_id INT NOT NULL,
+  category_id CHAR(36) NOT NULL,
   trainer_id INT NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (modality_id) REFERENCES modalities (id),
@@ -161,7 +157,7 @@ CREATE TABLE leads (
 CREATE TABLE staff (
   id INT NOT NULL,
   hire_date DATE NOT NULL,
-  user_id INT NOT NULL,
+  user_id CHAR(36) NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );

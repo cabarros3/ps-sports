@@ -4,7 +4,9 @@ import swaggerJsdoc from "swagger-jsdoc";
 import type { Options } from "swagger-jsdoc";
 
 // Rotas
+import routesAddresses from "./routes/addresses.routes.ts";
 import routesCategories from "./routes/categories.routes.ts";
+import routesClasses from "./routes/classes.routes.ts";
 import routesLeads from "./routes/leads.routes.ts";
 import routesPhones from "./routes/phones.routes.ts";
 import routesPlayers from "./routes/players.routes.ts";
@@ -39,6 +41,7 @@ const swaggerOptions: Options = {
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 
 // Importar rotas
+router.use("/addresses", routesAddresses);
 router.use("/users", routesUsers);
 router.use("/users-roles", routesUsersRoles);
 router.use("/trainers", routesTrainers);
@@ -49,6 +52,7 @@ router.use("/players", routesPlayers);
 router.use("/phones", routesPhones);
 router.use("/leads", routesLeads);
 router.use("/categories", routesCategories);
+router.use("/classes", routesClasses);
 router.use("/guardians", routesGuardians); // Adicionado para a tarefa #31
 router.use("/modalities", routesModalities);
 router.use("/attendances", routesAttendances);
