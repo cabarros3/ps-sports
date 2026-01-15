@@ -10,6 +10,32 @@ O sistema é destinado a diferentes perfis de usuários, incluindo administrador
 
 A adoção dessa solução digital busca melhorar a organização interna, reduzir erros operacionais, especialmente os relacionados a pagamentos, além de evitar constrangimentos e retrabalhos. O sistema também visa assegurar que todas as informações estejam centralizadas, seguras e facilmente acessíveis, contribuindo para uma gestão mais eficiente e profissional da PS Sport’s.
 
+## 📄 Documentação de Requisitos
+
+O escopo completo do projeto, incluindo os Requisitos Funcionais (RF) e Requisitos Não Funcionais (RNF), está detalhado no documento oficial do Google Docs.
+
+[🔗 Acesse aqui o Documento de Requisitos Completo](https://docs.google.com/document/d/1NHu1lkV-fAkKo74Efiz2OCMEY1sbNSi1UjWYjg6c_60/edit?usp=sharing)
+
+Nesta documentação você encontrará:
+
+- Modelagem de Dados: Entidades e relacionamentos.
+
+- Regras de Negócio: Funcionamento de matrículas, autenticação e permissões.
+
+- Casos de Uso: Fluxos de interação do usuário com a API.
+
+### 💡 Resumo dos Principais Requisitos
+
+Para facilitar a consulta rápida, aqui estão os pilares do sistema:
+
+- Gestão de Acesso: Controle de usuários e níveis de permissão via Roles.
+
+- Operacional Esportivo: Controle de modalidades, turmas e frequências.
+
+- Comunicação e Leads: Gestão de contatos e prospecção de novos alunos.
+
+- Infraestrutura: Persistência em banco de dados relacional e execução via Docker.
+
 ## Como instalar o projeto
 
 1. É possível instalar por [arquivo .zip](https://github.com/cabarros3/ps-sports/archive/refs/heads/main.zip)
