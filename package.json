@@ -1,14 +1,6 @@
 {
   "name": "backend",
   "version": "1.0.0",
-<<<<<<< HEAD
-  "description": "",
-  "main": "src/index.js",
-  "scripts": {
-    "dev": "nodemon src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-=======
   "description": "## Descrição",
   "main": "src/index.js",
  "scripts": {
@@ -17,7 +9,6 @@
   "start": "node src/js/index.js",
   "test": "echo \"Error: no test specified\" && exit 1"
 },
->>>>>>> attendances_modalities_categories
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -25,11 +16,7 @@
   "dependencies": {
     "bcrypt": "^6.0.0",
     "dotenv": "^17.2.3",
-<<<<<<< HEAD
-    "express": "^5.1.0",
-=======
     "express": "^5.2.1",
->>>>>>> attendances_modalities_categories
     "mysql2": "^3.16.0",
     "sequelize": "^6.37.7",
     "swagger-jsdoc": "^6.2.8",
@@ -38,17 +25,11 @@
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
-<<<<<<< HEAD
-    "@types/node": "^24.10.2",
-    "@types/swagger-jsdoc": "^6.0.4",
-    "@types/swagger-ui-express": "^4.1.8",
-=======
     "@types/node": "^24.10.7",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
     "nodemon": "^3.1.11",
     "tsx": "^4.21.0",
->>>>>>> attendances_modalities_categories
     "typescript": "^5.9.3"
   }
 }
