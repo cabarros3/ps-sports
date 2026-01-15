@@ -1,6 +1,7 @@
 import sequelize from "../config/config.ts";
 import UsersModel from "./Users.ts";
 import LeadsModel from "./Leads.ts";
+import UsersRolesModel from "./Users_Roles.ts";
 
 import CategoriesModel from "./Categories.ts";
 import ModalitiesModel from "./Modalities.ts";
@@ -11,6 +12,7 @@ const Categories = CategoriesModel(sequelize);
 const Modalities = ModalitiesModel (sequelize);
 const Users = UsersModel(sequelize);
 const Leads = LeadsModel(sequelize);
+const UsersRoles = UsersRolesModel(sequelize);
 const Phones = PhonesModel(sequelize);
 const Staffs = StaffsModel(sequelize);
 const Schools = SchoolsModel(sequelize);
@@ -25,4 +27,4 @@ async function syncDatabase() {
 
 syncDatabase();
 
-export { Leads, Users , Attendances, Categories, Modalities };
+export { Leads, Users , Attendances, Categories, Modalities, UsersRoles };
