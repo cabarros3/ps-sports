@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "description": "## Descrição",
   "main": "src/index.js",
- "scripts": {
-  "dev": "nodemon --watch 'src/**/*.ts' --exec 'tsx' src/index.ts",
-  "build": "tsc",
-  "start": "node src/js/index.js",
-  "test": "echo \"Error: no test specified\" && exit 1"
-},
+  "scripts": {
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'tsx' src/index.ts",
+    "build": "tsc",
+    "start": "node src/js/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -17,6 +17,7 @@
     "bcrypt": "^6.0.0",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "mysql2": "^3.16.0",
     "sequelize": "^6.37.7",
     "swagger-jsdoc": "^6.2.8",
@@ -25,6 +26,7 @@
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.10.7",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
