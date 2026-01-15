@@ -15,6 +15,8 @@ import routesTrainers from "./routes/trainers.routes.ts";
 import routesUsersRoles from "./routes/users-roles.routes.ts";
 import routesUsers from "./routes/users.routes.ts";
 import routesGuardians from "./routes/guardians.routes.ts"; // Adicionado para a tarefa #31
+import routesModalities from "./routes/modalities.routes.ts";
+import routesAttendances from "./routes/attendances.routes.ts";
 
 const router = Router();
 
@@ -48,6 +50,8 @@ router.use("/phones", routesPhones);
 router.use("/leads", routesLeads);
 router.use("/categories", routesCategories);
 router.use("/guardians", routesGuardians); // Adicionado para a tarefa #31
+router.use("/modalities", routesModalities);
+router.use("/attendances", routesAttendances);
 
 // Rota de Documentação (Swagger UI)
 router.use(
