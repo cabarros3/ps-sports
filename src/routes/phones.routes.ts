@@ -1,4 +1,6 @@
 import express from "express";
+import { PhonesController } from "../controllers/PhonesController.ts";
+
 const routerPhones = express.Router();
 
 /**
@@ -301,7 +303,7 @@ const routerPhones = express.Router();
  *             example:
  *               error: "Erro ao listar telefones"
  */
-routerPhones.get("/", (req, res) => res.send("Listar telefones"));
+routerPhones.get("/", PhonesController.listar);
 
 /**
  * @swagger
@@ -352,7 +354,7 @@ routerPhones.get("/", (req, res) => res.send("Listar telefones"));
  *       500:
  *         description: Erro interno do servidor
  */
-routerPhones.get("/:id", (req, res) => res.send("Buscar telefone"));
+routerPhones.get("/:id", PhonesController.buscarPorId);
 
 /**
  * @swagger
@@ -415,7 +417,7 @@ routerPhones.get("/:id", (req, res) => res.send("Buscar telefone"));
  *       500:
  *         description: Erro interno do servidor
  */
-routerPhones.post("/", (req, res) => res.send("Criar telefone"));
+routerPhones.post("/", PhonesController.criar);
 
 /**
  * @swagger
@@ -491,7 +493,7 @@ routerPhones.post("/", (req, res) => res.send("Criar telefone"));
  *       500:
  *         description: Erro interno do servidor
  */
-routerPhones.put("/:id", (req, res) => res.send("Atualizar telefone"));
+routerPhones.put("/:id", PhonesController.atualizar);
 
 /**
  * @swagger
@@ -549,6 +551,6 @@ routerPhones.put("/:id", (req, res) => res.send("Atualizar telefone"));
  *       500:
  *         description: Erro interno do servidor
  */
-routerPhones.delete("/:id", (req, res) => res.send("Deletar telefone"));
+routerPhones.delete("/:id", PhonesController.deletar);
 
 export default routerPhones;
