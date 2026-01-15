@@ -27,4 +27,4 @@ async function syncDatabase() {
 
 syncDatabase();
 
-export { Leads, Users , Attendances, Categories, Modalities, UsersRoles };
+export { Leads, Users , Attendances, Categories, Modalities, UsersRoles, sequelize };
