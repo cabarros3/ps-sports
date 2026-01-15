@@ -8,10 +8,17 @@ services:
       MYSQL_USER: ${MYSQL_USER:-ps_sport}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-ps_sport}
     ports:
+<<<<<<< HEAD
       - 3306:3306
     volumes:
       - ps_sport_data:/var/lib/mysql
       - ./database/init:/docker-entrypoint-initdb.d
+=======
+      - 3307:3306
+    volumes:
+      - ps_sport_data:/var/lib/mysql
+      # - ./database/init:/docker-entrypoint-initdb.d
+>>>>>>> attendances_modalities_categories
 
 volumes:
   ps_sport_data:

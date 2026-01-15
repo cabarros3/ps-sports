@@ -20,7 +20,11 @@ CREATE TABLE users (
 CREATE TABLE phones (
   id INT NOT NULL AUTO_INCREMENT,
   number VARCHAR(20) NOT NULL,
+<<<<<<< HEAD
   user_id INT NOT NULL,
+=======
+  user_id CHAR(36) NOT NULL,
+>>>>>>> attendances_modalities_categories
   PRIMARY KEY (id),
   UNIQUE (number),
   FOREIGN KEY (user_id) REFERENCES users(id)
