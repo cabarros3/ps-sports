@@ -13,8 +13,7 @@ interface AcCreationAttributes extends Optional<IAcademicRecords, "id"> {}
 
 export class AcademicRecords
   extends Model<IAcademicRecords, AcCreationAttributes>
-  implements IAcademicRecords
-{
+  implements IAcademicRecords {
   public id!: string;
   public year!: Date;
   public semester!: number;
@@ -50,7 +49,7 @@ export default function AcademicRecordsModel(sequelize: Sequelize) {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-          model: "enrollment",
+          model: "enrollments",
           key: "id",
         },
         onUpdate: "CASCADE",
@@ -64,7 +63,7 @@ export default function AcademicRecordsModel(sequelize: Sequelize) {
       timestamps: true,
       createdAt: "created_at",
       updatedAt: "updated_at",
-    }
+    },
   );
   return AcademicRecords;
 }

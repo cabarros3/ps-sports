@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { Performances } from "../models/Perfomance.ts";
+import { Performances } from "../models/index.ts";
 
 export const PerformanceController = {
   async criar(req: Request, res: Response) {

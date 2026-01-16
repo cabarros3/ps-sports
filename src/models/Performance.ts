@@ -1,7 +1,8 @@
-import { DataTypes, Model, Optional, Sequelize } from "sequelize";
+import { DataTypes, Model, Sequelize } from "sequelize";
+import type { Optional } from "sequelize";
 
 export interface IPerformances {
-  id: string;
+  id: number;
   criteria: string;
   observation: string;
   level: number;
@@ -9,14 +10,12 @@ export interface IPerformances {
   academic_id: string;
 }
 
-
 type PerformanceCreationAttributes = Optional<IPerformances, "id">;
 
 export class Performances
   extends Model<IPerformances, PerformanceCreationAttributes>
-  implements IPerformances
-{
-  public id!: string;
+  implements IPerformances {
+  public id!: number;
   public criteria!: string;
   public observation!: string;
   public level!: number;
@@ -28,10 +27,10 @@ export default function PerformanceModel(sequelize: Sequelize) {
   Performances.init(
     {
       id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
+        type: DataTypes.INTEGER,
         primaryKey: true,
         allowNull: false,
+        autoIncrement: true,
       },
       criteria: {
         type: DataTypes.STRING(100),
@@ -46,11 +45,11 @@ export default function PerformanceModel(sequelize: Sequelize) {
         allowNull: false,
       },
       trainer_id: {
-        type: DataTypes.UUID,
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
       academic_id: {
-        type: DataTypes.UUID,
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
     },
@@ -59,14 +58,11 @@ export default function PerformanceModel(sequelize: Sequelize) {
       tableName: "performances",
       underscored: true,
       timestamps: false,
-    }
+    },
   );
 
   return Performances;
 }
-
-
-
 
 // import { DataTypes, Model, Sequelize } from "sequelize";
 
@@ -94,7 +90,7 @@ export default function PerformanceModel(sequelize: Sequelize) {
 //       id: {
 //         type: DataTypes.UUID,
 //         defaultValue: DataTypes.UUIDV4,
-//         autoIncrement: true, 
+//         autoIncrement: true,
 //         allowNull: false,
 //       },
 //       criteria: {
@@ -129,7 +125,7 @@ export default function PerformanceModel(sequelize: Sequelize) {
 //     {
 //       sequelize,
 //       underscored: true,
-//       timestamps: false, 
+//       timestamps: false,
 //       tableName: "performances",
 //       createdAt: "created_at",
 //       updatedAt: "updated_at",

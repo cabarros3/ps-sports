@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { Evaluations } from "../models/Evaluations.ts";
+import { Evaluations } from "../models/index.ts";
 
 export const EvaluationsController = {
   async criar(req: Request, res: Response) {
@@ -15,7 +15,7 @@ export const EvaluationsController = {
       });
 
       return res.status(201).json(evaluation);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Erro ao criar avaliação:", (error as Error).message);
       return res.status(400).json({
         message: "Não foi possível criar a avaliação",
@@ -24,14 +24,14 @@ export const EvaluationsController = {
     }
   },
 
-  async listar(req: Request, res: Response) {
+  async listar(_req: Request, res: Response) {
     try {
       const evaluations = await Evaluations.findAll({
         attributes: ["date", "score", "notes", "trainer_id", "academic_id"],
       });
 
       return res.json(evaluations);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("ERRO NO BANCO:", (error as Error).message);
       return res.status(500).json({ error: (error as Error).message });
     }
@@ -47,7 +47,7 @@ export const EvaluationsController = {
       }
 
       return res.json(evaluationId);
-    } catch (error: any) {
+    } catch (error: unknown) {
       return res.status(500).json({
         message: "ID fornecido é inválido ou erro no servidor",
         error: (error as Error).message,
@@ -81,8 +81,11 @@ export const EvaluationsController = {
         evaluationId,
         mensagem: "Avaliação atualizada com sucesso",
       });
-    } catch (error: any) {
-      return res.status(500).json({ error: "Erro ao atualizar a avaliação" });
+    } catch (error: unknown) {
+      return res.status(500).json({
+        message: "Erro ao atualizar a avaliação",
+        error: (error as Error).message,
+      });
     }
   },
 
@@ -98,7 +101,7 @@ export const EvaluationsController = {
       await Evaluations.destroy();
 
       return res.json({ mensagem: "Avaliação removida com sucesso" });
-    } catch (error: any) {
+    } catch (error: unknown) {
       return res.status(500).json({
         mensagem: "Erro ao deletar a avaliação",
         error: (error as Error).message,

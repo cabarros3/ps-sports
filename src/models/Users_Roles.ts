@@ -5,8 +5,6 @@ interface IUsersRoles {
   id: string;
   user_id: string;
   role_id: string;
-  created_at?: Date;
-  updated_at?: Date;
 }
 
 interface UsersRolesCreationAttributes extends Optional<IUsersRoles, "id"> {}
@@ -45,7 +43,7 @@ export default function UsersRolesModel(sequelize: Sequelize) {
     {
       sequelize,
       tableName: "users_roles",
-      timestamps: true,
+      timestamps: false,
     },
   );
 

@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { Modalities } from "../models/Modalities.ts";
+import { Modalities } from "../models/index.ts";
 
 class modalitiesControllers {
   async criar(req: Request, res: Response) {

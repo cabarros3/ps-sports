@@ -6,10 +6,9 @@ class attendancesControllers {
 
   async criar(req: Request, res: Response) {
     try {
-      const { id, class_date, status, enrollment_id } = req.body;
+      const { class_date, status, enrollment_id } = req.body;
 
       const attendance = await Attendances.create({
-        id,
         class_date,
         status,
         enrollment_id,
@@ -25,7 +24,7 @@ class attendancesControllers {
   }
 
   //  Listar todas
-  async listar(req: Request, res: Response) {
+  async listar(_req: Request, res: Response) {
     try {
       const attendances = await Attendances.findAll();
       return res.json(attendances);
