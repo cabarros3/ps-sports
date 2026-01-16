@@ -12,10 +12,8 @@ export interface ITrainers {
 
 interface TrainersCreationAttributes extends Optional<ITrainers, "id"> {}
 
-export class Trainers
-  extends Model<ITrainers, TrainersCreationAttributes>
-  implements ITrainers
-{
+export class Trainers extends Model<ITrainers, TrainersCreationAttributes>
+  implements ITrainers {
   public id!: string;
   public license_level!: string;
   public specialty!: string;
@@ -57,10 +55,9 @@ export default function TrainersModel(sequelize: Sequelize) {
       sequelize,
       tableName: "trainers",
       underscored: true,
-      timestamps: true,
       createdAt: "created_at",
       updatedAt: "updated_at",
-    }
+    },
   );
 
   return Trainers;

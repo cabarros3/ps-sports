@@ -6,14 +6,21 @@ import ClassesModel from "./Classes.ts";
 import PlayersModel from "./Players.ts";
 import TrainersModel from "./Trainers.ts";
 import UsersRolesModel from "./Users_Roles.ts";
-
 import CategoriesModel from "./Categories.ts";
 import ModalitiesModel from "./Modalities.ts";
 import AttendancesModel from "./Attendances.ts";
+import PhonesModel from "./Phones.ts";
+import StaffsModel from "./Staffs.ts";
+import SchoolsModel from "./Schools.ts";
+import AcademicRecordsModel from "./AcademicRecord.ts";
+import EvaluationsModel from "./Evaluations.ts";
+import GuardianModel from "./Guardian.ts";
+import PerformanceModel from "./Performance.ts";
 
 const Attendances = AttendancesModel(sequelize);
+const AcademicRecords = AcademicRecordsModel(sequelize);
 const Categories = CategoriesModel(sequelize);
-const Modalities = ModalitiesModel (sequelize);
+const Modalities = ModalitiesModel(sequelize);
 const Users = UsersModel(sequelize);
 const Leads = LeadsModel(sequelize);
 const Addresses = AddressesModel(sequelize);
@@ -24,6 +31,9 @@ const UsersRoles = UsersRolesModel(sequelize);
 const Phones = PhonesModel(sequelize);
 const Staffs = StaffsModel(sequelize);
 const Schools = SchoolsModel(sequelize);
+const Evaluations = EvaluationsModel(sequelize);
+const Guardians = GuardianModel(sequelize);
+const Performances = PerformanceModel(sequelize);
 
 // ---- Relações ----
 
@@ -49,4 +59,23 @@ async function syncDatabase() {
 
 syncDatabase();
 
-export { Leads, Users , Attendances, Categories, Modalities, UsersRoles, Trainers, Addresses, Classes, Players, sequelize };
+export {
+  AcademicRecords,
+  Addresses,
+  Attendances,
+  Categories,
+  Classes,
+  Evaluations,
+  Guardians,
+  Leads,
+  Modalities,
+  Performances,
+  Phones,
+  Players,
+  Schools,
+  sequelize,
+  Staffs,
+  Trainers,
+  Users,
+  UsersRoles,
+};

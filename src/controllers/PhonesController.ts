@@ -12,10 +12,10 @@ export const PhonesController = {
       });
 
       return res.status(201).json(phones);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Erro ao criar telefone: ", error);
 
-      if (error.name === "SequelizeUniqueConstraintError") {
+      if ((error as Error).name === "SequelizeUniqueConstraintError") {
         return res
           .status(409)
           .json({ error: "Este número já está cadastrado." });
@@ -23,12 +23,12 @@ export const PhonesController = {
 
       return res.status(400).json({
         message: "Não foi possível criar o telefone",
-        error: error.message,
+        error: (error as Error).message,
       });
     }
   },
 
-  async listar(req: Request, res: Response) {
+  async listar(_req: Request, res: Response) {
     try {
       const phones = await Phones.findAll({
         attributes: [
@@ -39,9 +39,9 @@ export const PhonesController = {
       });
 
       return res.json(phones);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("ERRO NO BANCO: ", error);
-      return res.status(500).json({ error: error.message });
+      return res.status(500).json({ error: (error as Error).message });
     }
   },
 
@@ -55,10 +55,13 @@ export const PhonesController = {
       }
 
       return res.json(phones);
-    } catch (error: any) {
+    } catch (error: unknown) {
       return res
         .status(500)
-        .json({ error: "ID fornecido é inválido ou erro no servidor" });
+        .json({
+          message: "ID fornecido é inválido ou erro no servidor",
+          error: error,
+        });
     }
   },
   async atualizar(req: Request, res: Response) {
@@ -82,8 +85,8 @@ export const PhonesController = {
         phones,
         mensagem: "Telefone atualizado com sucesso",
       });
-    } catch (error: any) {
-      if (error.name === "SequelizeUniqueConstraintError") {
+    } catch (error: unknown) {
+      if ((error as Error).name === "SequelizeUniqueConstraintError") {
         return res
           .status(409)
           .json({ error: "Este número já está em uso" });
@@ -108,10 +111,13 @@ export const PhonesController = {
 
       await phones.destroy();
       return res.json({ mensagem: "Telefone removido com sucesso" });
-    } catch (error: any) {
+    } catch (error: unknown) {
       return res
         .status(500)
-        .json({ error: "Erro ao deletar o sucesso" });
+        .json({
+          message: "Erro ao deletar o sucesso",
+          error: (error as Error).message,
+        });
     }
   },
 };

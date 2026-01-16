@@ -63,6 +63,9 @@ router.use(
   swaggerUi.serve,
   swaggerUi.setup(swaggerDocs, {
     customSiteTitle: "API Ps-Sports",
+    swaggerOptions: {
+      defaultModelsExpandDepth: 0,
+    },
   }),
 );
 

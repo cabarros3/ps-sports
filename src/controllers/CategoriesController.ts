@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
-import { Categories } from "../models/Categories.ts";
+import type { Request, Response } from "express";
+import { Categories } from "../models/index.ts";
 
 class CategoriesController {
   //  Criar categoria
@@ -23,7 +23,7 @@ class CategoriesController {
   }
 
   // Listar todas as categorias
-  async listar(req: Request, res: Response) {
+  async listar(_req: Request, res: Response) {
     try {
       const categories = await Categories.findAll();
       return res.json(categories);
@@ -111,4 +111,4 @@ class CategoriesController {
   }
 }
 
-export default new CategoriesController()
+export default new CategoriesController();

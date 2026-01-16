@@ -21,8 +21,6 @@ export class Schools extends Model<ISchools, SchoolCreationAttributes>
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
-
-  static associate(models: any) {}
 }
 
 export default function SchoolsModel(sequelize: Sequelize) {

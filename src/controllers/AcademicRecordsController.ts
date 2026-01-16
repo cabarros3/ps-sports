@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { AcademicRecords } from "../models/AcademicRecord.ts";
+import { AcademicRecords } from "../models/index.ts";
 
 export const AcademicRecordsController = {
   async criar(req: Request, res: Response) {
@@ -14,10 +14,10 @@ export const AcademicRecordsController = {
       });
 
       return res.status(201).json(academic_record);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(
         "Erro ao criar o registro acadêmico:",
-        (error as Error).message
+        (error as Error).message,
       );
       return res.status(400).json({
         message: "Não foi possível criar o registro acadêmico",
@@ -26,14 +26,14 @@ export const AcademicRecordsController = {
     }
   },
 
-  async listar(req: Request, res: Response) {
+  async listar(_req: Request, res: Response) {
     try {
       const academic_records = await AcademicRecords.findAll({
         attributes: ["id", "year", "semester", "status", "enrollement_id"],
       });
 
       return res.json(academic_records);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("ERRO NO BANCO:", (error as Error).message);
       return res.status(500).json({ error: (error as Error).message });
     }
@@ -51,7 +51,7 @@ export const AcademicRecordsController = {
       }
 
       return res.json(academic_record_id);
-    } catch (error: any) {
+    } catch (error: unknown) {
       return res.status(500).json({
         message: "ID fornecido é inválido ou erro no servidor",
         error: (error as Error).message,
@@ -106,7 +106,7 @@ export const AcademicRecordsController = {
       await academic_record_id.destroy();
 
       return res.json({ mensagem: "Registro acadêmico removido com sucesso" });
-    } catch (error: any) {
+    } catch (error: unknown) {
       return res.status(500).json({
         mensagem: "Erro ao deletar o registro acadêmico",
         error: (error as Error).message,

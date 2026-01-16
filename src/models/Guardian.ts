@@ -1,43 +1,31 @@
-import { Model, DataTypes } from 'sequelize';
-import { sequelize } from './index.ts';
+import { DataTypes, Model, Sequelize } from "sequelize";
+
 export class Guardian extends Model {
-  public gua_id!: number;
-  public gua_usr_id!: number;
-  public gua_name!: string;
-  public gua_cpf!: string;
-  public gua_phone!: string;
-  public gua_email!: string;
+  public id!: number;
+  public kinship!: string;
+  public user_id!: string;
 }
 
-Guardian.init({
-  gua_id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  },
-  gua_usr_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  gua_name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  gua_cpf: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-  },
-  gua_phone: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  gua_email: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  }
-}, {
-  sequelize,
-  tableName: 'guardians',
-  timestamps: true,
-});
+export default function GuardianModel(sequelize: Sequelize) {
+  Guardian.init({
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    kinship: {
+      type: DataTypes.STRING(45),
+      allowNull: false,
+    },
+    user_id: {
+      type: DataTypes.UUIDV4,
+      allowNull: false,
+    },
+  }, {
+    sequelize,
+    tableName: "guardians",
+    timestamps: false,
+  });
+
+  return Guardian;
+}

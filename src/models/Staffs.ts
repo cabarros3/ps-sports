@@ -4,7 +4,7 @@ import type { Optional } from "sequelize";
 interface IStaff {
   id: number;
   hire_date: Date;
-  USR_ID: string;
+  user_id: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -15,18 +15,10 @@ export class Staff extends Model<IStaff, StaffCreationAttributes>
   implements IStaff {
   public id!: number;
   public hire_date!: Date;
-  public USR_ID!: string;
+  public user_id!: string;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
-
-  static associate(models: any) {
-    Staff.belongsTo(models.Users, {
-      foreignKey: "USR_ID",
-      targetKey: "USR_ID",
-      as: "user",
-    });
-  }
 }
 
 export default function StaffModel(sequelize: Sequelize) {
@@ -41,12 +33,12 @@ export default function StaffModel(sequelize: Sequelize) {
         type: DataTypes.DATEONLY,
         allowNull: false,
       },
-      USR_ID: {
+      user_id: {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-          model: "USERS",
-          key: "USR_ID",
+          model: "users",
+          key: "user_id",
         },
         onDelete: "CASCADE",
         onUpdate: "CASCADE",

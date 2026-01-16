@@ -13,26 +13,26 @@ export const SchoolsController = {
       });
 
       return res.status(201).json(schools);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Erro ao criar escola: ", error);
 
       return res.status(400).json({
         message: "Não foi possível criar a escola",
-        error: error.message,
+        error: (error as Error).message,
       });
     }
   },
 
-  async listar(req: Request, res: Response) {
+  async listar(_req: Request, res: Response) {
     try {
       const schools = await Schools.findAll({
         attributes: ["id", "name", "address", "phone"],
       });
 
       return res.json(schools);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Erro ao listar escolas: ", error);
-      return res.status(500).json({ error: error.message });
+      return res.status(500).json({ error: (error as Error).message });
     }
   },
 
@@ -46,10 +46,13 @@ export const SchoolsController = {
       }
 
       return res.json(schools);
-    } catch (error: any) {
+    } catch (error: unknown) {
       return res
         .status(500)
-        .json({ error: "ID fornecido é inválido ou erro no servidor" });
+        .json({
+          message: "ID fornecido é inválido ou erro no servidor",
+          error: (error as Error).message,
+        });
     }
   },
 
@@ -75,10 +78,13 @@ export const SchoolsController = {
         schools,
         mensagem: "Escola atualizada com sucesso",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       return res
         .status(500)
-        .json({ error: "Erro ao atualizar a escola" });
+        .json({
+          message: "Erro ao atualizar a escola",
+          error: (error as Error).message,
+        });
     }
   },
 
@@ -95,10 +101,13 @@ export const SchoolsController = {
 
       await school.destroy();
       return res.json({ mensagem: "Escola removida com sucesso" });
-    } catch (error: any) {
+    } catch (error: unknown) {
       return res
         .status(500)
-        .json({ error: "Erro ao deletar a escola" });
+        .json({
+          message: "Erro ao deletar a escola",
+          error: (error as Error).message,
+        });
     }
   },
 };

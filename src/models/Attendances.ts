@@ -1,4 +1,3 @@
-
 import { DataTypes, Model, Sequelize } from "sequelize";
 import type { Optional } from "sequelize";
 
@@ -9,13 +8,11 @@ interface IAttendances {
   enrollment_id: number;
 }
 
-interface AttendancesCreationAttributes
-  extends Optional<IAttendances, "id"> {}
+interface AttendancesCreationAttributes extends Optional<IAttendances, "id"> {}
 
 export class Attendances
   extends Model<IAttendances, AttendancesCreationAttributes>
-  implements IAttendances
-{
+  implements IAttendances {
   public id!: number;
   public class_date!: Date;
   public status!: number;
@@ -29,6 +26,7 @@ const AttendancesModel = (sequelize: Sequelize) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
+        autoIncrement: true,
       },
       class_date: {
         type: DataTypes.DATE,

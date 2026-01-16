@@ -13,7 +13,7 @@ export const TrainersController = {
       });
 
       return res.status(201).json(trainer);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Erro ao criar treinador:", (error as Error).message);
       return res.status(400).json({
         message: "Não foi possível criar o treinador",
@@ -36,7 +36,7 @@ export const TrainersController = {
       });
 
       return res.json(trainers);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("ERRO NO BANCO:", (error as Error).message);
       return res.status(500).json({ error: (error as Error).message });
     }
@@ -52,7 +52,7 @@ export const TrainersController = {
       }
 
       return res.json(trainerId);
-    } catch (error: any) {
+    } catch (error: unknown) {
       return res.status(500).json({
         message: "ID fornecido é inválido ou erro no servidor",
         error: (error as Error).message,
@@ -81,8 +81,11 @@ export const TrainersController = {
         trainerId,
         mensagem: "Lead atualizado com sucesso",
       });
-    } catch (error: any) {
-      return res.status(500).json({ error: "Erro ao atualizar o treinador" });
+    } catch (error: unknown) {
+      return res.status(500).json({
+        message: "Erro ao atualizar o treinador",
+        error: (error as Error).message,
+      });
     }
   },
 

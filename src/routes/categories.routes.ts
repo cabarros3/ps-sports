@@ -1,4 +1,5 @@
 import express from "express";
+import CategoriesController from "../controllers/CategoriesController.ts";
 
 const routesCategories = express.Router();
 
@@ -6,129 +7,106 @@ const routesCategories = express.Router();
  * @swagger
  * components:
  *   schemas:
- *     Categoria:
+ *     Category:
  *       type: object
  *       properties:
  *         id:
- *           type: integer
- *           description: ID único da categoria
- *         nome:
  *           type: string
+ *           format: uuid
+ *           description: ID único da categoria (UUID gerado automaticamente)
+ *         name:
+ *           type: string
+ *           maxLength: 100
  *           description: Nome da categoria
- *         descricao:
- *           type: string
- *           description: Descrição detalhada da categoria
- *         ativa:
- *           type: boolean
- *           description: Indica se a categoria está ativa
+ *         min_age:
+ *           type: integer
+ *           description: Idade mínima da categoria
+ *         max_age:
+ *           type: integer
+ *           description: Idade máxima da categoria
  *         created_at:
  *           type: string
  *           format: date-time
- *           description: Data de criação da categoria
+ *           description: Data de criação do registro
  *         updated_at:
  *           type: string
  *           format: date-time
  *           description: Data da última atualização
  *       example:
- *         id: 1
- *         nome: "Tecnologia"
- *         descricao: "Cursos relacionados a tecnologia e programação"
- *         ativa: true
- *         created_at: "2024-01-15T10:30:00Z"
- *         updated_at: "2024-01-15T10:30:00Z"
+ *         id: "550e8400-e29b-41d4-a716-446655440000"
+ *         name: "Sub-12"
+ *         min_age: 10
+ *         max_age: 12
+ *         created_at: "2026-01-15T10:30:00Z"
+ *         updated_at: "2026-01-15T10:30:00Z"
  *
- *     CategoriaInput:
+ *     CategoryInput:
  *       type: object
  *       required:
- *         - nome
+ *         - name
+ *         - min_age
+ *         - max_age
  *       properties:
- *         nome:
+ *         name:
  *           type: string
+ *           maxLength: 100
  *           description: Nome da categoria
  *           minLength: 3
- *           maxLength: 100
- *         descricao:
- *           type: string
- *           description: Descrição detalhada da categoria
- *           maxLength: 500
- *         ativa:
- *           type: boolean
- *           description: Indica se a categoria está ativa
- *           default: true
+ *         min_age:
+ *           type: integer
+ *           description: Idade mínima
+ *           minimum: 0
+ *         max_age:
+ *           type: integer
+ *           description: Idade máxima
+ *           minimum: 0
  *       example:
- *         nome: "Design Gráfico"
- *         descricao: "Cursos de design, edição de imagens e criatividade visual"
- *         ativa: true
+ *         name: "Sub-15"
+ *         min_age: 13
+ *         max_age: 15
  *
- *     CategoriaError:
+ *     CategoryUpdate:
  *       type: object
  *       properties:
- *         error:
+ *         name:
+ *           type: string
+ *           maxLength: 100
+ *           minLength: 3
+ *         min_age:
+ *           type: integer
+ *           minimum: 0
+ *         max_age:
+ *           type: integer
+ *           minimum: 0
+ *       example:
+ *         name: "Sub-15 Avançado"
+ *         min_age: 14
+ *         max_age: 15
+ *
+ *     CategoryError:
+ *       type: object
+ *       properties:
+ *         message:
  *           type: string
  *           description: Mensagem de erro
+ *         error:
+ *           type: object
+ *           description: Detalhes do erro
  *       example:
- *         error: "Categoria não encontrada"
- *
- *     CategoriaSuccessMessage:
- *       type: object
- *       properties:
- *         mensagem:
- *           type: string
- *           description: Mensagem de sucesso
- *       example:
- *         mensagem: "Categoria removida com sucesso"
- *
- *     CategoriaAtualizadaResponse:
- *       type: object
- *       properties:
- *         categoria:
- *           $ref: '#/components/schemas/Categoria'
- *         mensagem:
- *           type: string
- *       example:
- *         categoria:
- *           id: 1
- *           nome: "Tecnologia Atualizada"
- *           descricao: "Cursos atualizados de tecnologia"
- *           ativa: true
- *           created_at: "2024-01-15T10:30:00Z"
- *           updated_at: "2024-01-16T14:20:00Z"
- *         mensagem: "Categoria atualizada com sucesso"
+ *         message: "Categoria não encontrada"
  *
  *   tags:
- *     - name: Categorias
- *       description: Gerenciamento de categorias de cursos
+ *     - name: Categories
+ *       description: Gerenciamento de categorias de idade
  */
 
 /**
  * @swagger
- * /categorias:
+ * /categories:
  *   get:
  *     summary: Lista todas as categorias
- *     description: Retorna uma lista com todas as categorias cadastradas no sistema
- *     tags: [Categorias]
- *     parameters:
- *       - in: query
- *         name: ativa
- *         schema:
- *           type: boolean
- *         description: Filtrar apenas categorias ativas ou inativas
- *         example: true
- *       - in: query
- *         name: limite
- *         schema:
- *           type: integer
- *           minimum: 1
- *           maximum: 100
- *         description: Número máximo de resultados a retornar
- *         example: 10
- *       - in: query
- *         name: pagina
- *         schema:
- *           type: integer
- *           minimum: 1
- *         description: Número da página para paginação
- *         example: 1
+ *     description: Retorna uma lista completa com todas as categorias de idade cadastradas
+ *     tags: [Categories]
  *     responses:
  *       200:
  *         description: Lista de categorias retornada com sucesso
@@ -137,196 +115,204 @@ const routesCategories = express.Router();
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Categoria'
+ *                 $ref: '#/components/schemas/Category'
  *       500:
- *         description: Erro interno do servidor
+ *         description: Erro ao listar categorias
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/CategoriaError'
+ *               $ref: '#/components/schemas/CategoryError'
  *             example:
- *               error: "Erro ao listar categorias"
+ *               message: "Erro ao listar categorias"
+ *               error: {}
  */
-routesCategories.get("/", (req, res) => res.send("Listar categorias"));
+routesCategories.get("/", CategoriesController.listar);
 
 /**
  * @swagger
- * /categorias/{id}:
+ * /categories/{id}:
  *   get:
  *     summary: Busca uma categoria por ID
- *     description: Retorna os dados de uma categoria específica através do seu ID
- *     tags: [Categorias]
+ *     description: Retorna os dados de uma categoria específica através do seu UUID
+ *     tags: [Categories]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
- *         description: ID numérico da categoria
- *         example: 1
+ *           type: string
+ *           format: uuid
+ *         description: UUID da categoria
+ *         example: "550e8400-e29b-41d4-a716-446655440000"
  *     responses:
  *       200:
  *         description: Categoria encontrada com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Categoria'
+ *               $ref: '#/components/schemas/Category'
  *       404:
  *         description: Categoria não encontrada
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/CategoriaError'
+ *               $ref: '#/components/schemas/CategoryError'
  *             example:
- *               error: "Categoria não encontrada"
- *       400:
- *         description: ID inválido
+ *               message: "Categoria não encontrada"
+ *       500:
+ *         description: Erro ao buscar categoria
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/CategoriaError'
+ *               $ref: '#/components/schemas/CategoryError'
  *             example:
- *               error: "ID deve ser um número inteiro válido"
- *       500:
- *         description: Erro interno do servidor
+ *               message: "Erro ao buscar categoria"
+ *               error: {}
  */
-routesCategories.get("/:id", (req, res) => res.send("Buscar categoria"));
+routesCategories.get("/:id", CategoriesController.buscarPorId);
 
 /**
  * @swagger
- * /categorias:
+ * /categories:
  *   post:
  *     summary: Cria uma nova categoria
- *     description: Cadastra uma nova categoria no sistema com nome, descrição e status
- *     tags: [Categorias]
+ *     description: Cadastra uma nova categoria de idade no sistema. O ID (UUID) é gerado automaticamente
+ *     tags: [Categories]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/CategoriaInput'
+ *             $ref: '#/components/schemas/CategoryInput'
  *     responses:
  *       201:
  *         description: Categoria criada com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Categoria'
+ *               $ref: '#/components/schemas/Category'
  *       400:
- *         description: Dados inválidos ou categoria já existe
+ *         description: Dados inválidos
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/CategoriaError'
+ *               $ref: '#/components/schemas/CategoryError'
  *             examples:
- *               campoObrigatorio:
+ *               camposObrigatorios:
  *                 value:
- *                   error: "O campo nome é obrigatório"
- *               categoriaExistente:
+ *                   message: "Erro ao criar categoria"
+ *                   error: "Nome, idade mínima e máxima são obrigatórios"
+ *               idadeInvalida:
  *                 value:
- *                   error: "Já existe uma categoria com este nome"
+ *                   message: "Erro ao criar categoria"
+ *                   error: "Idade máxima deve ser maior que idade mínima"
  *       500:
  *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CategoryError'
+ *             example:
+ *               message: "Erro ao criar categoria"
+ *               error: {}
  */
-routesCategories.post("/", (req, res) => res.send("Criar categoria"));
+routesCategories.post("/", CategoriesController.criar);
 
 /**
  * @swagger
- * /categorias/{id}:
+ * /categories/{id}:
  *   put:
  *     summary: Atualiza uma categoria existente
- *     description: Atualiza os dados de uma categoria específica através do seu ID
- *     tags: [Categorias]
+ *     description: Atualiza os dados de uma categoria específica através do seu UUID
+ *     tags: [Categories]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
- *         description: ID numérico da categoria
- *         example: 1
+ *           type: string
+ *           format: uuid
+ *         description: UUID da categoria
+ *         example: "550e8400-e29b-41d4-a716-446655440000"
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/CategoriaInput'
+ *             $ref: '#/components/schemas/CategoryUpdate'
  *     responses:
  *       200:
  *         description: Categoria atualizada com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/CategoriaAtualizadaResponse'
+ *               $ref: '#/components/schemas/Category'
  *       404:
  *         description: Categoria não encontrada
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/CategoriaError'
+ *               $ref: '#/components/schemas/CategoryError'
  *             example:
- *               error: "Categoria não encontrada"
+ *               message: "Categoria não encontrada"
  *       400:
  *         description: Dados inválidos
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/CategoriaError'
- *             examples:
- *               dadosInvalidos:
- *                 value:
- *                   error: "Dados inválidos fornecidos"
- *               nomeExistente:
- *                 value:
- *                   error: "Já existe outra categoria com este nome"
+ *               $ref: '#/components/schemas/CategoryError'
+ *             example:
+ *               message: "Erro ao atualizar categoria"
+ *               error: "Idade máxima deve ser maior que idade mínima"
  *       500:
  *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CategoryError'
+ *             example:
+ *               message: "Erro ao atualizar categoria"
+ *               error: {}
  */
-routesCategories.put("/:id", (req, res) => res.send("Atualizar categoria"));
+routesCategories.put("/:id", CategoriesController.atualizar);
 
 /**
  * @swagger
- * /categorias/{id}:
+ * /categories/{id}:
  *   delete:
  *     summary: Remove uma categoria
- *     description: Realiza a exclusão de uma categoria através do seu ID. Categorias com cursos associados não podem ser removidas
- *     tags: [Categorias]
+ *     description: Realiza a exclusão permanente de uma categoria do sistema através do seu UUID
+ *     tags: [Categories]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
- *         description: ID numérico da categoria
- *         example: 1
+ *           type: string
+ *           format: uuid
+ *         description: UUID da categoria a ser removida
+ *         example: "550e8400-e29b-41d4-a716-446655440000"
  *     responses:
- *       200:
- *         description: Categoria removida com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/CategoriaSuccessMessage'
- *             example:
- *               mensagem: "Categoria removida com sucesso"
+ *       204:
+ *         description: Categoria removida com sucesso (sem conteúdo)
  *       404:
  *         description: Categoria não encontrada
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/CategoriaError'
+ *               $ref: '#/components/schemas/CategoryError'
  *             example:
- *               error: "Categoria não encontrada"
- *       409:
- *         description: Conflito - categoria possui cursos associados
+ *               message: "Categoria não encontrada"
+ *       500:
+ *         description: Erro interno do servidor
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/CategoriaError'
+ *               $ref: '#/components/schemas/CategoryError'
  *             example:
- *               error: "Não é possível remover categoria com cursos associados"
- *       500:
- *         description: Erro interno do servidor
+ *               message: "Erro ao deletar categoria"
+ *               error: {}
  */
-routesCategories.delete("/:id", (req, res) => res.send("Deletar categoria"));
+routesCategories.delete("/:id", CategoriesController.deletar);
 
 export default routesCategories;
