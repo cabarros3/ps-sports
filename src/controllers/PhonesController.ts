@@ -4,11 +4,11 @@ import { Phones } from "../models/index.ts";
 export const PhonesController = {
   async criar(req: Request, res: Response) {
     try {
-      const { number, usr_id } = req.body;
+      const { number, user_id } = req.body;
 
       const phones = await Phones.create({
         number,
-        usr_id,
+        user_id,
       });
 
       return res.status(201).json(phones);
@@ -34,7 +34,7 @@ export const PhonesController = {
         attributes: [
           "id",
           "number",
-          "usr_id",
+          "user_id",
         ],
       });
 
@@ -67,7 +67,7 @@ export const PhonesController = {
   async atualizar(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { number, usr_id } = req.body;
+      const { number, user_id } = req.body;
       const phones = await Phones.findByPk(id);
 
       if (!phones) {
@@ -78,7 +78,7 @@ export const PhonesController = {
 
       await phones.update({
         number: number ?? phones.number,
-        usr_id: usr_id ?? phones.usr_id,
+        user_id: user_id ?? phones.user_id,
       });
 
       return res.status(200).json({

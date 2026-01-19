@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { Roles } from "../models/Roles.ts";
+import { Roles } from "../models/index.ts";
 
 export const RolesController = {
   async listar(_req: Request, res: Response) {

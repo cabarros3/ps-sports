@@ -17,7 +17,7 @@ const routerStaffs = express.Router();
  *           type: string
  *           format: date
  *           description: Data de contratação do funcionário
- *         USR_ID:
+ *         user_id:
  *           type: string
  *           format: uuid
  *           description: ID do usuário associado
@@ -32,7 +32,7 @@ const routerStaffs = express.Router();
  *       example:
  *         id: 1
  *         hire_date: "2026-01-10"
- *         USR_ID: "550e8400-e29b-41d4-a716-446655440000"
+ *         user_id: "550e8400-e29b-41d4-a716-446655440000"
  *         createdAt: "2026-01-16T16:30:00Z"
  *         updatedAt: "2026-01-16T16:30:00Z"
  *
@@ -40,19 +40,19 @@ const routerStaffs = express.Router();
  *       type: object
  *       required:
  *         - hire_date
- *         - USR_ID
+ *         - user_id
  *       properties:
  *         hire_date:
  *           type: string
  *           format: date
- *           description: Data de contratação (formato YYYY-MM-DD)
- *         USR_ID:
+ *           description: Data de contratação (formato YYYY-MM-DD, obrigatório)
+ *         user_id:
  *           type: string
  *           format: uuid
- *           description: ID do usuário (referência a tabela USERS)
+ *           description: ID do usuário (obrigatório, referência a tabela users)
  *       example:
  *         hire_date: "2026-02-01"
- *         USR_ID: "660e8400-e29b-41d4-a716-446655440001"
+ *         user_id: "660e8400-e29b-41d4-a716-446655440001"
  *
  *     StaffUpdate:
  *       type: object
@@ -60,9 +60,11 @@ const routerStaffs = express.Router();
  *         hire_date:
  *           type: string
  *           format: date
- *         USR_ID:
+ *           description: Nova data de contratação
+ *         user_id:
  *           type: string
  *           format: uuid
+ *           description: Novo ID do usuário
  *       example:
  *         hire_date: "2026-02-15"
  *
@@ -98,7 +100,9 @@ const routerStaffs = express.Router();
  *         staffs:
  *           id: 1
  *           hire_date: "2026-02-15"
- *           USR_ID: "550e8400-e29b-41d4-a716-446655440000"
+ *           user_id: "550e8400-e29b-41d4-a716-446655440000"
+ *           createdAt: "2026-01-16T16:30:00Z"
+ *           updatedAt: "2026-01-18T10:20:00Z"
  *         mensagem: "Registro de staff atualizado com sucesso"
  *
  *   tags:
@@ -111,7 +115,7 @@ const routerStaffs = express.Router();
  * /staff:
  *   get:
  *     summary: Lista todos os funcionários
- *     description: Retorna uma lista completa com todos os registros de funcionários cadastrados
+ *     description: Retorna uma lista completa com todos os registros de funcionários cadastrados no sistema
  *     tags: [Staff]
  *     responses:
  *       200:
@@ -132,44 +136,6 @@ const routerStaffs = express.Router();
  *               error: "Erro ao buscar funcionários"
  */
 routerStaffs.get("/", StaffsController.listar);
-
-/**
- * @swagger
- * /staff:
- *   post:
- *     summary: Cria um novo registro de funcionário
- *     description: Cadastra um novo funcionário no sistema associado a um usuário. O ID é gerado automaticamente
- *     tags: [Staff]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/StaffInput'
- *     responses:
- *       201:
- *         description: Funcionário criado com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Staff'
- *       400:
- *         description: Dados inválidos ou campos obrigatórios ausentes
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/StaffError'
- *             examples:
- *               camposObrigatorios:
- *                 value:
- *                   message: "Não foi possível criar o registro"
- *                   error: "hire_date e USR_ID são obrigatórios"
- *               usuarioInvalido:
- *                 value:
- *                   message: "Não foi possível criar o registro"
- *                   error: "USR_ID não encontrado na tabela USERS"
- */
-routerStaffs.post("/", StaffsController.criar);
 
 /**
  * @swagger
@@ -212,6 +178,50 @@ routerStaffs.post("/", StaffsController.criar);
  *               error: "Detalhes do erro"
  */
 routerStaffs.get("/:id", StaffsController.buscarPorId);
+
+/**
+ * @swagger
+ * /staff:
+ *   post:
+ *     summary: Cria um novo registro de funcionário
+ *     description: Cadastra um novo funcionário no sistema associado a um usuário. O ID é gerado automaticamente
+ *     tags: [Staff]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/StaffInput'
+ *     responses:
+ *       201:
+ *         description: Funcionário criado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Staff'
+ *       400:
+ *         description: Dados inválidos ou campos obrigatórios ausentes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/StaffError'
+ *             examples:
+ *               camposObrigatorios:
+ *                 value:
+ *                   message: "Não foi possível criar o registro"
+ *                   error: "hire_date e user_id são obrigatórios"
+ *               usuarioInvalido:
+ *                 value:
+ *                   message: "Não foi possível criar o registro"
+ *                   error: "user_id não encontrado na tabela users"
+ *       500:
+ *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/StaffError'
+ */
+routerStaffs.post("/", StaffsController.criar);
 
 /**
  * @swagger

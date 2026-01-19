@@ -1,166 +1,76 @@
 import express from "express";
 import { PhonesController } from "../controllers/PhonesController.ts";
 
-const routerPhones = express.Router();
+const routesPhones = express.Router();
 
 /**
  * @swagger
  * components:
  *   schemas:
- *     Telefone:
+ *     Phone:
  *       type: object
  *       properties:
  *         id:
  *           type: integer
- *           description: ID único do telefone
- *         numero:
+ *           description: ID único do telefone (auto-incrementado)
+ *         number:
  *           type: string
- *           description: Número de telefone completo
- *         tipo:
+ *           maxLength: 20
+ *           description: Número de telefone (único)
+ *         user_id:
  *           type: string
- *           enum: [residencial, comercial, celular, recado]
- *           description: Tipo de telefone
- *         ddd:
- *           type: string
- *           description: Código de área (DDD)
- *           pattern: '^\d{2}$'
- *         principal:
- *           type: boolean
- *           description: Indica se é o telefone principal de contato
- *         whatsapp:
- *           type: boolean
- *           description: Indica se o número possui WhatsApp
- *         observacao:
- *           type: string
- *           description: Observações sobre o telefone (ex. melhor horário para contato)
- *         proprietario_tipo:
- *           type: string
- *           enum: [aluno, usuario, lead, professor]
- *           description: Tipo de entidade dona do telefone
- *         proprietario_id:
- *           type: integer
- *           description: ID da entidade proprietária do telefone
- *         ativo:
- *           type: boolean
- *           description: Indica se o telefone está ativo
- *         created_at:
- *           type: string
- *           format: date-time
- *           description: Data de criação do registro
- *         updated_at:
- *           type: string
- *           format: date-time
- *           description: Data da última atualização
+ *           format: uuid
+ *           description: ID do usuário
  *       example:
  *         id: 1
- *         numero: "+55 81 99999-8888"
- *         tipo: "celular"
- *         ddd: "81"
- *         principal: true
- *         whatsapp: true
- *         observacao: "Preferência para contato após 18h"
- *         proprietario_tipo: "aluno"
- *         proprietario_id: 15
- *         ativo: true
- *         created_at: "2024-01-15T10:30:00Z"
- *         updated_at: "2024-01-15T10:30:00Z"
+ *         number: "+5581999998888"
+ *         user_id: "550e8400-e29b-41d4-a716-446655440000"
  *
- *     TelefoneInput:
+ *     PhoneInput:
  *       type: object
  *       required:
- *         - numero
- *         - tipo
- *         - proprietario_tipo
- *         - proprietario_id
+ *         - number
+ *         - user_id
  *       properties:
- *         numero:
+ *         number:
  *           type: string
- *           description: Número de telefone completo
- *           pattern: '^\+?[1-9]\d{1,14}$'
- *           example: "+55 81 99999-8888"
- *         tipo:
+ *           maxLength: 20
+ *           description: Número de telefone (deve ser único)
+ *         user_id:
  *           type: string
- *           enum: [residencial, comercial, celular, recado]
- *           description: Tipo de telefone
- *         ddd:
- *           type: string
- *           description: Código de área (DDD) - extraído automaticamente se não fornecido
- *           pattern: '^\d{2}$'
- *           example: "81"
- *         principal:
- *           type: boolean
- *           description: Define como telefone principal
- *           default: false
- *         whatsapp:
- *           type: boolean
- *           description: Indica se possui WhatsApp
- *           default: false
- *         observacao:
- *           type: string
- *           description: Observações adicionais
- *           maxLength: 500
- *         proprietario_tipo:
- *           type: string
- *           enum: [aluno, usuario, lead, professor]
- *           description: Tipo de proprietário do telefone
- *         proprietario_id:
- *           type: integer
- *           description: ID do proprietário
- *           minimum: 1
- *         ativo:
- *           type: boolean
- *           description: Status do telefone
- *           default: true
+ *           format: uuid
+ *           description: ID do usuário (obrigatório, referência a tabela USERS)
  *       example:
- *         numero: "+55 11 98765-4321"
- *         tipo: "celular"
- *         ddd: "11"
- *         principal: true
- *         whatsapp: true
- *         observacao: "Contato comercial"
- *         proprietario_tipo: "lead"
- *         proprietario_id: 42
- *         ativo: true
+ *         number: "+5581987654321"
+ *         user_id: "660e8400-e29b-41d4-a716-446655440001"
  *
- *     TelefoneUpdate:
+ *     PhoneUpdate:
  *       type: object
  *       properties:
- *         numero:
+ *         number:
  *           type: string
- *           description: Número de telefone
- *           pattern: '^\+?[1-9]\d{1,14}$'
- *         tipo:
+ *           maxLength: 20
+ *           description: Novo número de telefone
+ *         user_id:
  *           type: string
- *           enum: [residencial, comercial, celular, recado]
- *         ddd:
- *           type: string
- *           pattern: '^\d{2}$'
- *         principal:
- *           type: boolean
- *           description: Define como principal
- *         whatsapp:
- *           type: boolean
- *         observacao:
- *           type: string
- *           maxLength: 500
- *         ativo:
- *           type: boolean
+ *           format: uuid
+ *           description: Novo ID do usuário
  *       example:
- *         tipo: "comercial"
- *         principal: false
- *         observacao: "Ramal 2045"
- *         whatsapp: false
+ *         number: "+5581911112222"
  *
- *     TelefoneError:
+ *     PhoneError:
  *       type: object
  *       properties:
  *         error:
  *           type: string
  *           description: Mensagem de erro
+ *         message:
+ *           type: string
+ *           description: Descrição detalhada do erro
  *       example:
  *         error: "Telefone não encontrado"
  *
- *     TelefoneSuccessMessage:
+ *     PhoneSuccessMessage:
  *       type: object
  *       properties:
  *         mensagem:
@@ -169,149 +79,59 @@ const routerPhones = express.Router();
  *       example:
  *         mensagem: "Telefone removido com sucesso"
  *
- *     TelefoneAtualizadoResponse:
+ *     PhoneUpdateResponse:
  *       type: object
  *       properties:
- *         telefone:
- *           $ref: '#/components/schemas/Telefone'
+ *         phones:
+ *           $ref: '#/components/schemas/Phone'
  *         mensagem:
  *           type: string
  *       example:
- *         telefone:
+ *         phones:
  *           id: 1
- *           numero: "+55 81 99999-8888"
- *           tipo: "celular"
- *           ddd: "81"
- *           principal: true
- *           whatsapp: true
- *           observacao: "Atualizado - melhor horário após 18h"
- *           proprietario_tipo: "aluno"
- *           proprietario_id: 15
- *           ativo: true
- *           created_at: "2024-01-15T10:30:00Z"
- *           updated_at: "2024-01-20T14:45:00Z"
+ *           number: "+5581911112222"
+ *           user_id: "550e8400-e29b-41d4-a716-446655440000"
  *         mensagem: "Telefone atualizado com sucesso"
  *
  *   tags:
- *     - name: Telefones
- *       description: Gerenciamento de telefones de contato
+ *     - name: Phones
+ *       description: Gerenciamento de telefones de usuários
  */
 
 /**
  * @swagger
- * /telefones:
+ * /phones:
  *   get:
  *     summary: Lista todos os telefones
- *     description: Retorna uma lista com todos os telefones cadastrados no sistema, com opções de filtro por proprietário, tipo e status
- *     tags: [Telefones]
- *     parameters:
- *       - in: query
- *         name: proprietario_tipo
- *         schema:
- *           type: string
- *           enum: [aluno, usuario, lead, professor]
- *         description: Filtrar telefones por tipo de proprietário
- *         example: aluno
- *       - in: query
- *         name: proprietario_id
- *         schema:
- *           type: integer
- *         description: Filtrar telefones de um proprietário específico
- *         example: 15
- *       - in: query
- *         name: tipo
- *         schema:
- *           type: string
- *           enum: [residencial, comercial, celular, recado]
- *         description: Filtrar por tipo de telefone
- *         example: celular
- *       - in: query
- *         name: principal
- *         schema:
- *           type: boolean
- *         description: Filtrar apenas telefones principais
- *         example: true
- *       - in: query
- *         name: whatsapp
- *         schema:
- *           type: boolean
- *         description: Filtrar telefones com WhatsApp
- *         example: true
- *       - in: query
- *         name: ativo
- *         schema:
- *           type: boolean
- *         description: Filtrar por status ativo/inativo
- *         example: true
- *       - in: query
- *         name: ddd
- *         schema:
- *           type: string
- *           pattern: '^\d{2}$'
- *         description: Filtrar por código de área (DDD)
- *         example: "81"
- *       - in: query
- *         name: limite
- *         schema:
- *           type: integer
- *           minimum: 1
- *           maximum: 100
- *         description: Número máximo de resultados
- *         example: 50
- *       - in: query
- *         name: pagina
- *         schema:
- *           type: integer
- *           minimum: 1
- *         description: Número da página
- *         example: 1
+ *     description: Retorna uma lista completa com todos os telefones cadastrados no sistema
+ *     tags: [Phones]
  *     responses:
  *       200:
  *         description: Lista de telefones retornada com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 telefones:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Telefone'
- *                 total:
- *                   type: integer
- *                   description: Total de telefones encontrados
- *                 pagina:
- *                   type: integer
- *                   description: Página atual
- *                 totalPaginas:
- *                   type: integer
- *                   description: Total de páginas
- *       401:
- *         description: Não autorizado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/TelefoneError'
- *             example:
- *               error: "Token de autenticação inválido"
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Phone'
  *       500:
- *         description: Erro interno do servidor
+ *         description: Erro ao listar telefones
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/TelefoneError'
+ *               $ref: '#/components/schemas/PhoneError'
  *             example:
- *               error: "Erro ao listar telefones"
+ *               error: "Erro ao buscar telefones"
  */
-routerPhones.get("/", PhonesController.listar);
+routesPhones.get("/", PhonesController.listar);
 
 /**
  * @swagger
- * /telefones/{id}:
+ * /phones/{id}:
  *   get:
  *     summary: Busca um telefone por ID
  *     description: Retorna os dados completos de um telefone específico através do seu ID
- *     tags: [Telefones]
+ *     tags: [Phones]
  *     parameters:
  *       - in: path
  *         name: id
@@ -326,106 +146,80 @@ routerPhones.get("/", PhonesController.listar);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Telefone'
+ *               $ref: '#/components/schemas/Phone'
  *       404:
  *         description: Telefone não encontrado
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/TelefoneError'
+ *               $ref: '#/components/schemas/PhoneError'
  *             example:
  *               error: "Telefone não encontrado"
- *       401:
- *         description: Não autorizado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/TelefoneError'
- *             example:
- *               error: "Acesso não autorizado"
- *       400:
- *         description: ID inválido
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/TelefoneError'
- *             example:
- *               error: "ID deve ser um número inteiro válido"
  *       500:
- *         description: Erro interno do servidor
+ *         description: ID inválido ou erro no servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PhoneError'
+ *             example:
+ *               message: "ID fornecido é inválido ou erro no servidor"
+ *               error: "Detalhes do erro"
  */
-routerPhones.get("/:id", PhonesController.buscarPorId);
+routesPhones.get("/:id", PhonesController.buscarPorId);
 
 /**
  * @swagger
- * /telefones:
+ * /phones:
  *   post:
  *     summary: Cria um novo telefone
- *     description: Cadastra um novo telefone vinculado a um proprietário (aluno, usuário, lead ou professor)
- *     tags: [Telefones]
+ *     description: Cadastra um novo telefone associado a um usuário. O número deve ser único
+ *     tags: [Phones]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/TelefoneInput'
+ *             $ref: '#/components/schemas/PhoneInput'
  *     responses:
  *       201:
  *         description: Telefone criado com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Telefone'
+ *               $ref: '#/components/schemas/Phone'
  *       400:
- *         description: Dados inválidos
+ *         description: Dados inválidos ou campos obrigatórios ausentes
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/TelefoneError'
- *             examples:
- *               campoObrigatorio:
- *                 value:
- *                   error: "Número, tipo, proprietário_tipo e proprietário_id são obrigatórios"
- *               numeroInvalido:
- *                 value:
- *                   error: "Formato de número de telefone inválido"
- *               dddInvalido:
- *                 value:
- *                   error: "DDD deve conter exatamente 2 dígitos"
- *               tipoInvalido:
- *                 value:
- *                   error: "Tipo de telefone inválido"
- *               proprietarioInvalido:
- *                 value:
- *                   error: "Tipo de proprietário inválido"
- *       404:
- *         description: Proprietário não encontrado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/TelefoneError'
+ *               $ref: '#/components/schemas/PhoneError'
  *             example:
- *               error: "Proprietário especificado não foi encontrado"
+ *               message: "Não foi possível criar o telefone"
+ *               error: "number e user_id são obrigatórios"
  *       409:
- *         description: Conflito - número já cadastrado para este proprietário
+ *         description: Número de telefone já cadastrado
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/TelefoneError'
+ *               $ref: '#/components/schemas/PhoneError'
  *             example:
- *               error: "Este número já está cadastrado para este proprietário"
+ *               error: "Este número já está cadastrado."
  *       500:
  *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PhoneError'
  */
-routerPhones.post("/", PhonesController.criar);
+routesPhones.post("/", PhonesController.criar);
 
 /**
  * @swagger
- * /telefones/{id}:
+ * /phones/{id}:
  *   put:
  *     summary: Atualiza um telefone existente
- *     description: Atualiza os dados de um telefone específico. Não é possível alterar o proprietário do telefone
- *     tags: [Telefones]
+ *     description: Atualiza o número e/ou usuário de um telefone. Se não informado, mantém os valores atuais
+ *     tags: [Phones]
  *     parameters:
  *       - in: path
  *         name: id
@@ -439,76 +233,55 @@ routerPhones.post("/", PhonesController.criar);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/TelefoneUpdate'
+ *             $ref: '#/components/schemas/PhoneUpdate'
  *     responses:
  *       200:
  *         description: Telefone atualizado com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/TelefoneAtualizadoResponse'
+ *               $ref: '#/components/schemas/PhoneUpdateResponse'
  *       404:
  *         description: Telefone não encontrado
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/TelefoneError'
+ *               $ref: '#/components/schemas/PhoneError'
  *             example:
- *               error: "Telefone não encontrado"
- *       400:
- *         description: Dados inválidos
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/TelefoneError'
- *             examples:
- *               numeroInvalido:
- *                 value:
- *                   error: "Formato de número de telefone inválido"
- *               dddInvalido:
- *                 value:
- *                   error: "DDD deve conter exatamente 2 dígitos"
- *               tipoInvalido:
- *                 value:
- *                   error: "Tipo de telefone inválido"
- *               principalConflito:
- *                 value:
- *                   error: "Já existe um telefone principal para este proprietário. Desative o outro primeiro"
- *       401:
- *         description: Não autorizado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/TelefoneError'
- *             example:
- *               error: "Você não tem permissão para atualizar este telefone"
+ *               error: "Telefone não encontrado para atualização"
  *       409:
- *         description: Conflito - número já usado por outro registro
+ *         description: Número já está em uso
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/TelefoneError'
+ *               $ref: '#/components/schemas/PhoneError'
  *             example:
- *               error: "Este número já está cadastrado em outro registro"
+ *               error: "Este número já está em uso"
  *       500:
- *         description: Erro interno do servidor
+ *         description: Erro ao atualizar telefone
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PhoneError'
+ *             example:
+ *               error: "Erro ao atualizar o telefone"
  */
-routerPhones.put("/:id", PhonesController.atualizar);
+routesPhones.put("/:id", PhonesController.atualizar);
 
 /**
  * @swagger
- * /telefones/{id}:
+ * /phones/{id}:
  *   delete:
  *     summary: Remove um telefone
- *     description: Realiza a exclusão de um telefone através do seu ID. Telefones principais podem exigir que outro seja definido como principal antes da exclusão
- *     tags: [Telefones]
+ *     description: Realiza a exclusão permanente de um telefone do sistema através do seu ID
+ *     tags: [Phones]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID numérico do telefone
+ *         description: ID numérico do telefone a ser removido
  *         example: 1
  *     responses:
  *       200:
@@ -516,7 +289,7 @@ routerPhones.put("/:id", PhonesController.atualizar);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/TelefoneSuccessMessage'
+ *               $ref: '#/components/schemas/PhoneSuccessMessage'
  *             example:
  *               mensagem: "Telefone removido com sucesso"
  *       404:
@@ -524,33 +297,19 @@ routerPhones.put("/:id", PhonesController.atualizar);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/TelefoneError'
+ *               $ref: '#/components/schemas/PhoneError'
  *             example:
  *               error: "Telefone não encontrado"
- *       401:
- *         description: Não autorizado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/TelefoneError'
- *             example:
- *               error: "Você não tem permissão para remover este telefone"
- *       409:
- *         description: Conflito - telefone é o único ou principal
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/TelefoneError'
- *             examples:
- *               unicoTelefone:
- *                 value:
- *                   error: "Não é possível remover o único telefone cadastrado. Cadastre outro primeiro"
- *               telefonePrincipal:
- *                 value:
- *                   error: "Defina outro telefone como principal antes de remover este"
  *       500:
- *         description: Erro interno do servidor
+ *         description: Erro ao deletar telefone
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PhoneError'
+ *             example:
+ *               message: "Erro ao deletar o sucesso"
+ *               error: "Detalhes do erro"
  */
-routerPhones.delete("/:id", PhonesController.deletar);
+routesPhones.delete("/:id", PhonesController.deletar);
 
-export default routerPhones;
+export default routesPhones;

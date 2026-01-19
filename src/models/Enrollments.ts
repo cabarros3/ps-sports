@@ -2,38 +2,33 @@ import { DataTypes, Model, Sequelize } from "sequelize";
 import type { Optional } from "sequelize";
 
 interface IEnrollments {
-  id: string;
+  id: number;
   entry_date: Date;
   status: "Ativo" | "Inativo" | "Pendente" | "Cancelado";
-  player_id: string;
-  class_id: string;
-  created_at?: Date;
-  updated_at?: Date;
+  player_id: number;
+  class_id: number;
 }
 
 interface EnrollmentsCreationAttributes extends Optional<IEnrollments, "id"> {}
 
 export class Enrollments
   extends Model<IEnrollments, EnrollmentsCreationAttributes>
-  implements IEnrollments
-{
-  public id!: string;
+  implements IEnrollments {
+  public id!: number;
   public entry_date!: Date;
   public status!: "Ativo" | "Inativo" | "Pendente" | "Cancelado";
-  public player_id!: string;
-  public class_id!: string;
-  public readonly created_at!: Date;
-  public readonly updated_at!: Date;
+  public player_id!: number;
+  public class_id!: number;
 }
 
 export default function EnrollmentsModel(sequelize: Sequelize) {
   Enrollments.init(
     {
       id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
+        type: DataTypes.INTEGER,
         primaryKey: true,
         allowNull: false,
+        autoIncrement: true,
       },
       entry_date: {
         type: DataTypes.DATE,
@@ -46,7 +41,7 @@ export default function EnrollmentsModel(sequelize: Sequelize) {
         defaultValue: "Pendente",
       },
       player_id: {
-        type: DataTypes.UUID,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
           model: "players",
@@ -54,7 +49,7 @@ export default function EnrollmentsModel(sequelize: Sequelize) {
         },
       },
       class_id: {
-        type: DataTypes.UUID,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
           model: "classes",
@@ -65,10 +60,8 @@ export default function EnrollmentsModel(sequelize: Sequelize) {
     {
       sequelize,
       tableName: "enrollments",
-      timestamps: true,
-      createdAt: "created_at",
-      updatedAt: "updated_at",
-    }
+      timestamps: false,
+    },
   );
   return Enrollments;
 }

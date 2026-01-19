@@ -155,7 +155,7 @@ CREATE TABLE leads (
 );
 
 CREATE TABLE staff (
-  id INT NOT NULL,
+  id INT NOT NULL AUTO_INCREMENT,
   hire_date DATE NOT NULL,
   user_id CHAR(36) NOT NULL,
   PRIMARY KEY (id),

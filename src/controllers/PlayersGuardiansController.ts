@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { PlayersGuardians } from "../models/PlayersGuardians.ts";
+import { PlayersGuardians } from "../models/index.ts";
 
 export const PlayersGuardiansController = {
   async listar(_req: Request, res: Response) {

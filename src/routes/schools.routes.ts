@@ -11,8 +11,9 @@ const routerSchools = express.Router();
  *       type: object
  *       properties:
  *         id:
- *           type: integer
- *           description: ID único da escola (auto-incrementado)
+ *           type: string
+ *           format: uuid
+ *           description: ID único da escola (UUID gerado automaticamente)
  *         name:
  *           type: string
  *           maxLength: 100
@@ -25,21 +26,11 @@ const routerSchools = express.Router();
  *           type: string
  *           maxLength: 100
  *           description: Telefone de contato
- *         createdAt:
- *           type: string
- *           format: date-time
- *           description: Data de criação do registro
- *         updatedAt:
- *           type: string
- *           format: date-time
- *           description: Data da última atualização
  *       example:
- *         id: 1
+ *         id: "550e8400-e29b-41d4-a716-446655440000"
  *         name: "Escola de Esportes Champions"
  *         address: "Rua das Flores, 123 - Boa Viagem, Recife - PE"
  *         phone: "(81) 3456-7890"
- *         createdAt: "2026-01-16T15:30:00Z"
- *         updatedAt: "2026-01-16T15:30:00Z"
  *
  *     SchoolInput:
  *       type: object
@@ -49,8 +40,7 @@ const routerSchools = express.Router();
  *         name:
  *           type: string
  *           maxLength: 100
- *           description: Nome da escola
- *           minLength: 3
+ *           description: Nome da escola (obrigatório)
  *         address:
  *           type: string
  *           maxLength: 100
@@ -70,13 +60,15 @@ const routerSchools = express.Router();
  *         name:
  *           type: string
  *           maxLength: 100
- *           minLength: 3
+ *           description: Novo nome da escola
  *         address:
  *           type: string
  *           maxLength: 100
+ *           description: Novo endereço
  *         phone:
  *           type: string
  *           maxLength: 100
+ *           description: Novo telefone
  *       example:
  *         name: "Escola de Esportes Champions Atualizada"
  *         address: "Rua das Flores, 456 - Boa Viagem, Recife - PE"
@@ -112,7 +104,7 @@ const routerSchools = express.Router();
  *           type: string
  *       example:
  *         schools:
- *           id: 1
+ *           id: "550e8400-e29b-41d4-a716-446655440000"
  *           name: "Escola de Esportes Champions"
  *           address: "Rua das Flores, 123 - Recife - PE"
  *           phone: "(81) 3456-7890"
@@ -128,7 +120,7 @@ const routerSchools = express.Router();
  * /schools:
  *   get:
  *     summary: Lista todas as escolas
- *     description: Retorna uma lista completa com todas as escolas cadastradas
+ *     description: Retorna uma lista completa com todas as escolas cadastradas no sistema
  *     tags: [Schools]
  *     responses:
  *       200:
@@ -152,51 +144,20 @@ routerSchools.get("/", SchoolsController.listar);
 
 /**
  * @swagger
- * /schools:
- *   post:
- *     summary: Cria uma nova escola
- *     description: Cadastra uma nova escola esportiva no sistema. O ID é gerado automaticamente
- *     tags: [Schools]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/SchoolInput'
- *     responses:
- *       201:
- *         description: Escola criada com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/School'
- *       400:
- *         description: Dados inválidos ou campos obrigatórios ausentes
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/SchoolError'
- *             example:
- *               message: "Não foi possível criar a escola"
- *               error: "Nome é obrigatório"
- */
-routerSchools.post("/", SchoolsController.criar);
-
-/**
- * @swagger
  * /schools/{id}:
  *   get:
  *     summary: Busca uma escola por ID
- *     description: Retorna os dados completos de uma escola específica através do seu ID
+ *     description: Retorna os dados completos de uma escola específica através do seu UUID
  *     tags: [Schools]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
- *         description: ID numérico da escola
- *         example: 1
+ *           type: string
+ *           format: uuid
+ *         description: UUID da escola
+ *         example: "550e8400-e29b-41d4-a716-446655440000"
  *     responses:
  *       200:
  *         description: Escola encontrada com sucesso
@@ -226,6 +187,44 @@ routerSchools.get("/:id", SchoolsController.buscarPorId);
 
 /**
  * @swagger
+ * /schools:
+ *   post:
+ *     summary: Cria uma nova escola
+ *     description: Cadastra uma nova escola esportiva no sistema. O ID UUID é gerado automaticamente
+ *     tags: [Schools]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/SchoolInput'
+ *     responses:
+ *       201:
+ *         description: Escola criada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/School'
+ *       400:
+ *         description: Dados inválidos ou campos obrigatórios ausentes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SchoolError'
+ *             example:
+ *               message: "Não foi possível criar a escola"
+ *               error: "Nome é obrigatório"
+ *       500:
+ *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SchoolError'
+ */
+routerSchools.post("/", SchoolsController.criar);
+
+/**
+ * @swagger
  * /schools/{id}:
  *   put:
  *     summary: Atualiza uma escola existente
@@ -236,9 +235,10 @@ routerSchools.get("/:id", SchoolsController.buscarPorId);
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
- *         description: ID numérico da escola
- *         example: 1
+ *           type: string
+ *           format: uuid
+ *         description: UUID da escola
+ *         example: "550e8400-e29b-41d4-a716-446655440000"
  *     requestBody:
  *       required: true
  *       content:
@@ -277,16 +277,17 @@ routerSchools.put("/:id", SchoolsController.atualizar);
  * /schools/{id}:
  *   delete:
  *     summary: Remove uma escola
- *     description: Realiza a exclusão permanente de uma escola do sistema através do seu ID
+ *     description: Realiza a exclusão permanente de uma escola do sistema através do seu UUID
  *     tags: [Schools]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
- *         description: ID numérico da escola a ser removida
- *         example: 1
+ *           type: string
+ *           format: uuid
+ *         description: UUID da escola a ser removida
+ *         example: "550e8400-e29b-41d4-a716-446655440000"
  *     responses:
  *       200:
  *         description: Escola removida com sucesso

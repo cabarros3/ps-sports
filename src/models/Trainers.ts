@@ -2,7 +2,7 @@ import { DataTypes, Model, Sequelize } from "sequelize";
 import type { Optional } from "sequelize";
 
 export interface ITrainers {
-  id: string;
+  id: number;
   license_level: string;
   specialty: string;
   user_id: string;
@@ -14,7 +14,7 @@ interface TrainersCreationAttributes extends Optional<ITrainers, "id"> {}
 
 export class Trainers extends Model<ITrainers, TrainersCreationAttributes>
   implements ITrainers {
-  public id!: string;
+  public id!: number;
   public license_level!: string;
   public specialty!: string;
   public user_id!: string;
@@ -27,10 +27,9 @@ export default function TrainersModel(sequelize: Sequelize) {
   Trainers.init(
     {
       id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
+        type: DataTypes.INTEGER,
         primaryKey: true,
-        allowNull: false,
+        autoIncrement: true,
       },
       license_level: {
         type: DataTypes.STRING(50),
