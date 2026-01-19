@@ -10,22 +10,19 @@ const guardiansRoutes = Router();
  *     Guardian:
  *       type: object
  *       properties:
- *         gua_id:
+ *         id:
  *           type: integer
  *           description: ID único do responsável (auto-incrementado)
- *         gua_usr_id:
- *           type: integer
- *           description: ID do usuário associado
- *         gua_name:
+ *         name:
  *           type: string
  *           description: Nome completo do responsável
- *         gua_cpf:
+ *         cpf:
  *           type: string
  *           description: CPF do responsável (único)
- *         gua_phone:
+ *         phone:
  *           type: string
  *           description: Telefone de contato
- *         gua_email:
+ *         email:
  *           type: string
  *           format: email
  *           description: Email do responsável
@@ -38,47 +35,46 @@ const guardiansRoutes = Router();
  *           format: date-time
  *           description: Data da última atualização
  *       example:
- *         gua_id: 1
- *         gua_usr_id: 10
- *         gua_name: "Maria Silva Santos"
- *         gua_cpf: "123.456.789-00"
- *         gua_phone: "(81) 98765-4321"
- *         gua_email: "maria.santos@example.com"
+ *         id: 1
+ *         name: "Maria Silva Santos"
+ *         cpf: "123.456.789-00"
+ *         phone: "(81) 98765-4321"
+ *         email: "maria.santos@example.com"
  *         createdAt: "2026-01-16T14:30:00Z"
  *         updatedAt: "2026-01-16T14:30:00Z"
  *
  *     GuardianInput:
  *       type: object
  *       required:
- *         - gua_usr_id
- *         - gua_name
- *         - gua_cpf
- *         - gua_phone
- *         - gua_email
+ *         - id
+ *         - name
+ *         - cpf
+ *         - phone
+ *         - email
  *       properties:
- *         gua_usr_id:
+ *         id:
  *           type: integer
  *           description: ID do usuário associado
- *         gua_name:
+ *         name:
  *           type: string
  *           description: Nome completo do responsável
- *         gua_cpf:
+ *         cpf:
  *           type: string
  *           description: CPF do responsável (formato XXX.XXX.XXX-XX)
  *           pattern: '^\d{3}\.\d{3}\.\d{3}-\d{2}$'
- *         gua_phone:
+ *         phone:
  *           type: string
  *           description: Telefone de contato
- *         gua_email:
+ *         email:
  *           type: string
  *           format: email
  *           description: Email do responsável
  *       example:
- *         gua_usr_id: 15
- *         gua_name: "João Pedro Oliveira"
- *         gua_cpf: "987.654.321-00"
- *         gua_phone: "(81) 99876-5432"
- *         gua_email: "joao.oliveira@example.com"
+ *         id: 15
+ *         name: "João Pedro Oliveira"
+ *         cpf: "987.654.321-00"
+ *         phone: "(81) 99876-5432"
+ *         email: "joao.oliveira@example.com"
  *
  *     GuardianError:
  *       type: object

@@ -1,4 +1,3 @@
-
 import { DataTypes, Model, Sequelize } from "sequelize";
 import type { Optional } from "sequelize";
 
@@ -7,24 +6,16 @@ interface ICategories {
   name: string;
   min_age: number;
   max_age: number;
-  created_at?: Date;
-  updated_at?: Date;
 }
 
-interface CategoriesCreationAttributes
-  extends Optional<ICategories, "id"> {}
+interface CategoriesCreationAttributes extends Optional<ICategories, "id"> {}
 
-export class Categories
-  extends Model<ICategories, CategoriesCreationAttributes>
-  implements ICategories
-{
+export class Categories extends Model<ICategories, CategoriesCreationAttributes>
+  implements ICategories {
   public id!: string;
   public name!: string;
   public min_age!: number;
   public max_age!: number;
-
-  public readonly created_at!: Date;
-  public readonly updated_at!: Date;
 }
 
 export default function CategoriesModel(sequelize: Sequelize) {
@@ -52,9 +43,7 @@ export default function CategoriesModel(sequelize: Sequelize) {
     {
       sequelize,
       tableName: "categories",
-      timestamps: true,
-      createdAt: "created_at",
-      updatedAt: "updated_at",
+      timestamps: false,
     },
   );
 

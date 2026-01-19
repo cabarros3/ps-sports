@@ -24,21 +24,11 @@ const routesCategories = express.Router();
  *         max_age:
  *           type: integer
  *           description: Idade máxima da categoria
- *         created_at:
- *           type: string
- *           format: date-time
- *           description: Data de criação do registro
- *         updated_at:
- *           type: string
- *           format: date-time
- *           description: Data da última atualização
  *       example:
  *         id: "550e8400-e29b-41d4-a716-446655440000"
  *         name: "Sub-12"
  *         min_age: 10
  *         max_age: 12
- *         created_at: "2026-01-15T10:30:00Z"
- *         updated_at: "2026-01-15T10:30:00Z"
  *
  *     CategoryInput:
  *       type: object

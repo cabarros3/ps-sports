@@ -2,33 +2,28 @@ import { DataTypes, Model, Sequelize } from "sequelize";
 import type { Optional } from "sequelize";
 
 interface ISchools {
-  id: number;
+  id: string;
   name: string;
   address: string;
   phone: string;
-  createdAt?: Date;
-  updatedAt?: Date;
 }
 
 interface SchoolCreationAttributes extends Optional<ISchools, "id"> {}
 
 export class Schools extends Model<ISchools, SchoolCreationAttributes>
   implements ISchools {
-  public id!: number;
+  public id!: string;
   public name!: string;
   public address!: string;
   public phone!: string;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
 }
 
 export default function SchoolsModel(sequelize: Sequelize) {
   Schools.init(
     {
       id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.UUIDV4,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },
       name: {
@@ -47,7 +42,7 @@ export default function SchoolsModel(sequelize: Sequelize) {
     {
       sequelize,
       tableName: "schools",
-      timestamps: true,
+      timestamps: false,
       underscored: true,
     },
   );

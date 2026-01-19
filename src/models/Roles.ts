@@ -2,34 +2,27 @@ import { DataTypes, Model, Sequelize } from "sequelize";
 import type { Optional } from "sequelize";
 
 interface IRoles {
-  id: string;
+  id: number;
   name: string;
   description: string;
-  created_at?: Date;
-  updated_at?: Date;
 }
 
 interface RolesCreationAttributes extends Optional<IRoles, "id"> {}
 
-export class Roles
-  extends Model<IRoles, RolesCreationAttributes>
-  implements IRoles
-{
-  public id!: string;
+export class Roles extends Model<IRoles, RolesCreationAttributes>
+  implements IRoles {
+  public id!: number;
   public name!: string;
   public description!: string;
-  public readonly created_at!: Date;
-  public readonly updated_at!: Date;
 }
 
 export default function RolesModel(sequelize: Sequelize) {
   Roles.init(
     {
       id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
+        type: DataTypes.INTEGER,
         primaryKey: true,
-        allowNull: false,
+        autoIncrement: true,
       },
       name: {
         type: DataTypes.STRING(45),
@@ -44,10 +37,8 @@ export default function RolesModel(sequelize: Sequelize) {
     {
       sequelize,
       tableName: "roles",
-      timestamps: true,
-      createdAt: "created_at",
-      updatedAt: "updated_at",
-    }
+      timestamps: false,
+    },
   );
   return Roles;
 }

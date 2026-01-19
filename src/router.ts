@@ -19,6 +19,7 @@ import routesUsers from "./routes/users.routes.ts";
 import routesGuardians from "./routes/guardians.routes.ts"; // Adicionado para a tarefa #31
 import routesModalities from "./routes/modalities.routes.ts";
 import routesAttendances from "./routes/attendances.routes.ts";
+import routesEnrollments from "./routes/enrollments.routes.ts";
 
 const router = Router();
 
@@ -56,6 +57,7 @@ router.use("/classes", routesClasses);
 router.use("/guardians", routesGuardians); // Adicionado para a tarefa #31
 router.use("/modalities", routesModalities);
 router.use("/attendances", routesAttendances);
+router.use("/enrollments", routesEnrollments);
 
 // Rota de Documentação (Swagger UI)
 router.use(

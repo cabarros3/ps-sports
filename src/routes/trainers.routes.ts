@@ -11,9 +11,8 @@ const routerTrainers = express.Router();
  *       type: object
  *       properties:
  *         id:
- *           type: string
- *           format: uuid
- *           description: ID único do treinador (UUID gerado automaticamente)
+ *           type: integer
+ *           description: ID único do treinador (auto-incrementado)
  *         license_level:
  *           type: string
  *           maxLength: 50
@@ -35,7 +34,7 @@ const routerTrainers = express.Router();
  *           format: date-time
  *           description: Data da última atualização
  *       example:
- *         id: "550e8400-e29b-41d4-a716-446655440000"
+ *         id: 1
  *         license_level: "Nível 3 - UEFA Pro"
  *         specialty: "Preparação Física"
  *         user_id: "660e8400-e29b-41d4-a716-446655440001"
@@ -94,9 +93,11 @@ const routerTrainers = express.Router();
  *         license_level:
  *           type: string
  *           maxLength: 50
+ *           description: Novo nível de licença
  *         specialty:
  *           type: string
  *           maxLength: 50
+ *           description: Nova especialidade
  *       example:
  *         license_level: "Nível 3 - UEFA Pro"
  *         specialty: "Táticas Ofensivas"
@@ -134,10 +135,12 @@ const routerTrainers = express.Router();
  *           type: string
  *       example:
  *         trainerId:
- *           id: "550e8400-e29b-41d4-a716-446655440000"
+ *           id: 1
  *           license_level: "Nível 3 - UEFA Pro"
  *           specialty: "Táticas Ofensivas"
  *           user_id: "660e8400-e29b-41d4-a716-446655440001"
+ *           created_at: "2026-01-16T17:00:00Z"
+ *           updated_at: "2026-01-18T14:30:00Z"
  *         mensagem: "Lead atualizado com sucesso"
  *
  *   tags:
@@ -150,7 +153,7 @@ const routerTrainers = express.Router();
  * /trainers:
  *   get:
  *     summary: Lista todos os treinadores
- *     description: Retorna uma lista completa com todos os treinadores cadastrados, incluindo informações do usuário associado
+ *     description: Retorna uma lista completa com todos os treinadores cadastrados, incluindo informações do usuário associado (nome e email)
  *     tags: [Trainers]
  *     responses:
  *       200:
@@ -174,58 +177,19 @@ routerTrainers.get("/", TrainersController.listar);
 
 /**
  * @swagger
- * /trainers:
- *   post:
- *     summary: Cria um novo treinador
- *     description: Cadastra um novo treinador no sistema associado a um usuário. O ID é gerado automaticamente (UUID)
- *     tags: [Trainers]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/TrainerInput'
- *     responses:
- *       201:
- *         description: Treinador criado com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Trainer'
- *       400:
- *         description: Dados inválidos ou user_id ausente
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/TrainerError'
- *             examples:
- *               campoObrigatorio:
- *                 value:
- *                   message: "Não foi possível criar o treinador"
- *                   error: "user_id é obrigatório"
- *               usuarioInvalido:
- *                 value:
- *                   message: "Não foi possível criar o treinador"
- *                   error: "user_id não encontrado na tabela users"
- */
-routerTrainers.post("/", TrainersController.criar);
-
-/**
- * @swagger
  * /trainers/{id}:
  *   get:
  *     summary: Busca um treinador por ID
- *     description: Retorna os dados completos de um treinador específico através do seu UUID
+ *     description: Retorna os dados completos de um treinador específico através do seu ID
  *     tags: [Trainers]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: string
- *           format: uuid
- *         description: UUID do treinador
- *         example: "550e8400-e29b-41d4-a716-446655440000"
+ *           type: integer
+ *         description: ID numérico do treinador
+ *         example: 1
  *     responses:
  *       200:
  *         description: Treinador encontrado com sucesso
@@ -255,20 +219,63 @@ routerTrainers.get("/:id", TrainersController.buscarPorId);
 
 /**
  * @swagger
+ * /trainers:
+ *   post:
+ *     summary: Cria um novo treinador
+ *     description: Cadastra um novo treinador no sistema associado a um usuário. O ID é gerado automaticamente. license_level e specialty são opcionais
+ *     tags: [Trainers]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/TrainerInput'
+ *     responses:
+ *       201:
+ *         description: Treinador criado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Trainer'
+ *       400:
+ *         description: Dados inválidos ou user_id ausente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/TrainerError'
+ *             examples:
+ *               campoObrigatorio:
+ *                 value:
+ *                   message: "Não foi possível criar o treinador"
+ *                   error: "user_id é obrigatório"
+ *               usuarioInvalido:
+ *                 value:
+ *                   message: "Não foi possível criar o treinador"
+ *                   error: "user_id não encontrado na tabela users"
+ *       500:
+ *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/TrainerError'
+ */
+routerTrainers.post("/", TrainersController.criar);
+
+/**
+ * @swagger
  * /trainers/{id}:
  *   put:
  *     summary: Atualiza um treinador existente
- *     description: Atualiza o nível de licença e/ou especialidade de um treinador
+ *     description: Atualiza o nível de licença e/ou especialidade de um treinador. Não é possível alterar o user_id
  *     tags: [Trainers]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: string
- *           format: uuid
- *         description: UUID do treinador
- *         example: "550e8400-e29b-41d4-a716-446655440000"
+ *           type: integer
+ *         description: ID numérico do treinador
+ *         example: 1
  *     requestBody:
  *       required: true
  *       content:
@@ -307,17 +314,16 @@ routerTrainers.put("/:id", TrainersController.atualizar);
  * /trainers/{id}:
  *   delete:
  *     summary: Remove um treinador
- *     description: Realiza a exclusão permanente de um treinador do sistema através do seu UUID
+ *     description: Realiza a exclusão permanente de um treinador do sistema através do seu ID
  *     tags: [Trainers]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: string
- *           format: uuid
- *         description: UUID do treinador a ser removido
- *         example: "550e8400-e29b-41d4-a716-446655440000"
+ *           type: integer
+ *         description: ID numérico do treinador a ser removido
+ *         example: 1
  *     responses:
  *       200:
  *         description: Treinador removido com sucesso

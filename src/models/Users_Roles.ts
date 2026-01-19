@@ -4,7 +4,7 @@ import type { Optional } from "sequelize";
 interface IUsersRoles {
   id: string;
   user_id: string;
-  role_id: string;
+  role_id: number;
 }
 
 interface UsersRolesCreationAttributes extends Optional<IUsersRoles, "id"> {}
@@ -13,7 +13,7 @@ export class UsersRoles extends Model<IUsersRoles, UsersRolesCreationAttributes>
   implements IUsersRoles {
   public id!: string;
   public user_id!: string;
-  public role_id!: string;
+  public role_id!: number;
 }
 
 export default function UsersRolesModel(sequelize: Sequelize) {
@@ -33,7 +33,7 @@ export default function UsersRolesModel(sequelize: Sequelize) {
         onDelete: "CASCADE",
       },
       role_id: {
-        type: DataTypes.UUID,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: { model: "roles", key: "id" },
         onUpdate: "CASCADE",
@@ -44,6 +44,7 @@ export default function UsersRolesModel(sequelize: Sequelize) {
       sequelize,
       tableName: "users_roles",
       timestamps: false,
+      underscored: true,
     },
   );
 

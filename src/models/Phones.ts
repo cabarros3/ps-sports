@@ -4,9 +4,7 @@ import type { Optional } from "sequelize";
 interface IPhones {
   id: number;
   number: string;
-  usr_id: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  user_id: string;
 }
 
 interface PhoneCreationAttributes extends Optional<IPhones, "id"> {}
@@ -15,7 +13,7 @@ export class Phones extends Model<IPhones, PhoneCreationAttributes>
   implements IPhones {
   public id!: number;
   public number!: string;
-  public usr_id!: string;
+  public user_id!: string;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -34,12 +32,12 @@ export default function PhoneModel(sequelize: Sequelize) {
         allowNull: false,
         unique: true,
       },
-      usr_id: {
+      user_id: {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
           model: "USERS",
-          key: "usr_id",
+          key: "user_id",
         },
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
@@ -48,7 +46,7 @@ export default function PhoneModel(sequelize: Sequelize) {
     {
       sequelize,
       tableName: "phones",
-      timestamps: true,
+      timestamps: false,
       underscored: true,
     },
   );

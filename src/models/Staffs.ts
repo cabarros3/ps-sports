@@ -5,8 +5,6 @@ interface IStaff {
   id: number;
   hire_date: Date;
   user_id: string;
-  createdAt?: Date;
-  updatedAt?: Date;
 }
 
 interface StaffCreationAttributes extends Optional<IStaff, "id"> {}
@@ -16,9 +14,6 @@ export class Staff extends Model<IStaff, StaffCreationAttributes>
   public id!: number;
   public hire_date!: Date;
   public user_id!: string;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
 }
 
 export default function StaffModel(sequelize: Sequelize) {
@@ -47,7 +42,7 @@ export default function StaffModel(sequelize: Sequelize) {
     {
       sequelize,
       tableName: "staff",
-      timestamps: true,
+      timestamps: false,
       underscored: true,
     },
   );

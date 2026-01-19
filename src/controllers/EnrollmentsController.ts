@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { Enrollments } from "../models/Enrollments.ts";
+import { Enrollments } from "../models/index.ts";
 
 export const EnrollmentsController = {
   async listar(_req: Request, res: Response) {
@@ -11,8 +11,6 @@ export const EnrollmentsController = {
           "status",
           "player_id",
           "class_id",
-          "created_at",
-          "updated_at",
         ],
       });
       return res.json(enrollments);
@@ -21,6 +19,7 @@ export const EnrollmentsController = {
       return res.status(500).json({ error: (error as Error).message });
     }
   },
+
   async criar(req: Request, res: Response) {
     try {
       const { player_id, class_id, status } = req.body;
@@ -46,6 +45,7 @@ export const EnrollmentsController = {
       });
     }
   },
+
   async buscarPorId(req: Request, res: Response) {
     try {
       const { id } = req.params;
@@ -61,6 +61,7 @@ export const EnrollmentsController = {
       });
     }
   },
+
   async atualizar(req: Request, res: Response) {
     try {
       const { id } = req.params;
@@ -85,6 +86,7 @@ export const EnrollmentsController = {
       });
     }
   },
+
   async deletar(req: Request, res: Response) {
     try {
       const { id } = req.params;
